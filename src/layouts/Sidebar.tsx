@@ -1,4 +1,5 @@
 import React from "react";
+import { useAuth } from "@/hooks/useAuth";
 
 export type PageKey = "dashboard" | "sales" | "settings";
 
@@ -88,6 +89,8 @@ export const Sidebar: React.FC<SidebarProps> = ({
   isOpen,
   onClose,
 }) => {
+  const { logout, user } = useAuth();
+
   return (
     <>
       {/* Mobile Overlay */}
@@ -214,32 +217,43 @@ export const Sidebar: React.FC<SidebarProps> = ({
         </nav>
 
         {/* User Profile */}
-        <div className="p-3 border-t border-neutral-100">
-          <div className="flex items-center gap-3 px-3 py-2.5 rounded-lg hover:bg-neutral-50 cursor-pointer transition-colors">
-            <div className="w-8 h-8 rounded-full bg-gradient-warm flex items-center justify-center text-white text-xs font-bold shrink-0">
-              AM
+        <div className="border-t border-neutral-100 p-3">
+          <div className="rounded-2xl border border-neutral-100 bg-neutral-50/70 p-3">
+            <div className="flex items-center gap-3">
+              <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-gradient-warm text-sm font-bold text-white">
+                {user?.name?.charAt(0)?.toUpperCase() || "A"}
+              </div>
+
+              <div className="min-w-0 flex-1">
+                <p className="truncate text-sm font-semibold text-neutral-900">
+                  {user?.name || "Admin User"}
+                </p>
+
+                <p className="truncate text-xs text-neutral-400">
+                  {user?.email || "admin@plateform.com"}
+                </p>
+              </div>
             </div>
-            <div className="flex-1 min-w-0">
-              <p className="text-sm font-medium text-neutral-900 truncate">
-                Admin Manager
-              </p>
-              <p className="text-xs text-neutral-400 truncate">
-                admin@bistro.com
-              </p>
-            </div>
-            <svg
-              className="w-4 h-4 text-neutral-400 shrink-0"
-              fill="none"
-              viewBox="0 0 24 24"
-              stroke="currentColor"
+
+            <button
+              onClick={logout}
+              className="mt-3 flex w-full items-center justify-center gap-2 rounded-xl border border-red-100 bg-white px-3 py-2.5 text-sm font-medium text-red-500 transition-all duration-200 hover:bg-red-50 hover:text-red-600"
             >
-              <path
-                strokeLinecap="round"
-                strokeLinejoin="round"
-                strokeWidth={2}
-                d="M8 9l4-4 4 4m0 6l-4 4-4-4"
-              />
-            </svg>
+              <svg
+                className="h-4 w-4"
+                fill="none"
+                viewBox="0 0 24 24"
+                stroke="currentColor"
+              >
+                <path
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  strokeWidth={2}
+                  d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a2 2 0 01-2 2H6a2 2 0 01-2-2V7a2 2 0 012-2h5a2 2 0 012 2v1"
+                />
+              </svg>
+              Logout
+            </button>
           </div>
         </div>
       </aside>

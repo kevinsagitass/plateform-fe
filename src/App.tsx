@@ -5,9 +5,11 @@ import AuthProvider from "./context/AuthProvider";
 import { Toaster } from "react-hot-toast";
 import { HelmetProvider } from "react-helmet-async";
 import GuestRoute from "./helpers/GuestRoute";
-import { LandingPage } from "./pages/LandingPage";
+import LandingPage from "./pages/guest/LandingPage";
 import ProtectedRoute from "./helpers/ProtectedRoute";
 import AuthPage from "./pages/AuthPage";
+import Terms from "./pages/guest/Terms";
+import Privacy from "./pages/guest/Privacy";
 
 export default function App() {
   return (
@@ -19,7 +21,7 @@ export default function App() {
             duration: 3000,
             style: {
               borderRadius: "12px",
-              fontFamily: "Plus Jakarta Sans, sans-serif",
+              fontFamily: "Inter, sans-serif",
               fontSize: "14px",
             },
           }}
@@ -32,9 +34,11 @@ export default function App() {
               <Route path="/auth/callback" element={<AuthCallbackPage />} /> */}
               <Route path="/auth" element={<AuthPage />} />
               <Route path="/" element={<LandingPage />} />
+              <Route path="/terms" element={<Terms />} />
+              <Route path="/privacy" element={<Privacy />} />
             </Route>
 
-            <Route element={<GuestRoute />}>
+            <Route element={<ProtectedRoute />}>
               <Route path="/dashboard" element={<Dashboard />} />
             </Route>
           </Routes>

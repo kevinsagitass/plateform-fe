@@ -18,6 +18,7 @@ import {
 } from "lucide-react";
 import React from "react";
 import { Link } from "react-router-dom";
+import { useAuth } from "@/hooks/useAuth";
 
 type AuthMode = "login" | "register";
 
@@ -121,17 +122,17 @@ const features = [
   {
     icon: <ClipboardList className="w-5 h-5" />,
     title: "Smart Order Management",
-    desc: "Track semua order dengan cepat dan mudah",
+    desc: "Pantau dan kelola order dengan cepat dan efisien",
   },
   {
     icon: <BarChart3 className="w-5 h-5" />,
     title: "Revenue Analytics",
-    desc: "Dapatkan kemampuan analisa dari penjualan anda",
+    desc: "Analisa penjualan cerdas berbasis AI",
   },
   {
     icon: <Users className="w-5 h-5" />,
     title: "Team Collaboration",
-    desc: "Memastikan sistem berjalan dengan lancar dari frontdesk ke kitchen",
+    desc: "Koordinasi front to back yang lebih terhubung",
   },
 ];
 
@@ -178,12 +179,12 @@ const LeftPanel = () => (
       {/* Logo */}
       <div className="flex items-center gap-3">
         <Link to="/" className="flex items-center gap-3">
-        <div className="w-10 h-10 bg-gradient-warm rounded-xl flex items-center justify-center shadow-order">
-          <ChefHat className="w-5 h-5 text-white" />
-        </div>
-        <span className="font-display font-bold text-xl text-white tracking-tight">
-          Plateform
-        </span>
+          <div className="w-10 h-10 bg-gradient-warm rounded-xl flex items-center justify-center shadow-order">
+            <ChefHat className="w-5 h-5 text-white" />
+          </div>
+          <span className="font-display font-bold text-xl text-white tracking-tight">
+            Plateform
+          </span>
         </Link>
       </div>
 
@@ -197,11 +198,10 @@ const LeftPanel = () => (
         </div>
 
         <h2 className="font-display font-bold text-4xl xl:text-5xl text-white leading-tight mb-4">
-          Run your restaurant{" "}
+          Jalankan bisnis anda dengan{" "}
           <span className="text-transparent bg-clip-text bg-gradient-to-r from-primary-400 to-primary-300">
-            smarter
+            Mudah
           </span>
-          , not harder.
         </h2>
         <p className="text-neutral-400 text-base leading-relaxed max-w-sm">
           Semua yang dibutuhkan tim Anda pesanan, analitik, dan manajemen staf
@@ -289,6 +289,7 @@ export default function AuthPage() {
     confirmPassword: "",
   });
   const [errors, setErrors] = useState<Partial<FormData>>({});
+  const { login, register } = useAuth();
 
   const handleChange =
     (field: keyof FormData) => (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -300,6 +301,8 @@ export default function AuthPage() {
     const newErrors: Partial<FormData> = {};
     if (mode === "register" && !formData.name.trim())
       newErrors.name = "Full name is required";
+    if (mode === "register" && !formData.username.trim())
+      newErrors.username = "Username is required";
     if (!formData.email.trim()) newErrors.email = "Email is required";
     else if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(formData.email))
       newErrors.email = "Enter a valid email address";
@@ -318,10 +321,30 @@ export default function AuthPage() {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+
     if (!validate()) return;
-    setIsLoading(true);
-    await new Promise((r) => setTimeout(r, 1500));
-    setIsLoading(false);
+
+    try {
+      setIsLoading(true);
+
+      if (mode === "login") {
+        await login(formData.email, formData.password);
+      } else {
+        await register({
+          name: formData.name,
+          username: formData.username,
+          email: formData.email,
+          password: formData.password,
+          confirmPassword: formData.confirmPassword,
+        });
+
+        await login(formData.email, formData.password);
+      }
+    } catch (err) {
+      console.log(err);
+    } finally {
+      setIsLoading(false);
+    }
   };
 
   const handleGoogleLogin = async () => {

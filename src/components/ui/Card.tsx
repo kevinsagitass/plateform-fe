@@ -1,75 +1,78 @@
-import React from "react";
+import * as React from "react";
 
-interface CardProps {
-  children: React.ReactNode;
-  className?: string;
-  hover?: boolean;
-  onClick?: () => void;
-  padding?: "none" | "sm" | "md" | "lg";
-}
+import { cn } from "@/lib/utils";
 
-const paddingStyles = {
-  none: "",
-  sm: "p-4",
-  md: "p-5",
-  lg: "p-6",
-};
-
-export const Card: React.FC<CardProps> = ({
-  children,
-  className = "",
-  hover = false,
-  onClick,
-  padding = "md",
-}) => {
+function Card({ className, ...props }: React.ComponentProps<"div">) {
   return (
     <div
-      onClick={onClick}
-      className={[
-        "bg-surface rounded-xl border border-neutral-100 shadow-card",
-        hover
-          ? "hover:shadow-card-hover hover:-translate-y-0.5 transition-all duration-200 cursor-pointer"
-          : "",
-        paddingStyles[padding],
+      data-slot="card"
+      className={cn(
+        "bg-card text-card-foreground flex flex-col gap-6 rounded-xl border py-6 shadow-sm",
         className,
-      ].join(" ")}
-    >
-      {children}
-    </div>
+      )}
+      {...props}
+    />
   );
-};
-
-interface CardHeaderProps {
-  title: string;
-  subtitle?: string;
-  action?: React.ReactNode;
-  icon?: React.ReactNode;
 }
 
-export const CardHeader: React.FC<CardHeaderProps> = ({
-  title,
-  subtitle,
-  action,
-  icon,
-}) => {
+function CardHeader({ className, ...props }: React.ComponentProps<"div">) {
   return (
-    <div className="flex items-start justify-between mb-4">
-      <div className="flex items-center gap-3">
-        {icon && (
-          <div className="w-10 h-10 rounded-lg bg-primary-50 flex items-center justify-center text-primary-600">
-            {icon}
-          </div>
-        )}
-        <div>
-          <h3 className="font-display font-semibold text-neutral-900 text-base">
-            {title}
-          </h3>
-          {subtitle && (
-            <p className="text-xs text-neutral-500 mt-0.5">{subtitle}</p>
-          )}
-        </div>
-      </div>
-      {action && <div>{action}</div>}
-    </div>
+    <div
+      data-slot="card-header"
+      className={cn(
+        "@container/card-header grid auto-rows-min grid-rows-[auto_auto] items-start gap-1.5 px-6",
+        className,
+      )}
+      {...props}
+    />
   );
+}
+
+function CardTitle({ className, ...props }: React.ComponentProps<"div">) {
+  return (
+    <div
+      data-slot="card-title"
+      className={cn("leading-none font-semibold", className)}
+      {...props}
+    />
+  );
+}
+
+function CardDescription({ className, ...props }: React.ComponentProps<"div">) {
+  return (
+    <div
+      data-slot="card-description"
+      className={cn("text-muted-foreground text-sm", className)}
+      {...props}
+    />
+  );
+}
+
+function CardContent({ className, ...props }: React.ComponentProps<"div">) {
+  return (
+    <div
+      data-slot="card-content"
+      className={cn("px-6", className)}
+      {...props}
+    />
+  );
+}
+
+function CardFooter({ className, ...props }: React.ComponentProps<"div">) {
+  return (
+    <div
+      data-slot="card-footer"
+      className={cn("flex items-center px-6", className)}
+      {...props}
+    />
+  );
+}
+
+export {
+  Card,
+  CardHeader,
+  CardFooter,
+  CardTitle,
+  CardDescription,
+  CardContent,
 };

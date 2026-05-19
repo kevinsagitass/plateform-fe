@@ -1,8 +1,8 @@
 import React from "react";
-import { StatCard } from "../components/ui/StatCard";
-import { Card, CardHeader } from "../components/ui/Card";
-import { Badge } from "../components/ui/Badge";
-import { Button } from "../components/ui/Button";
+import { StatCard } from "../components/ui/statcard";
+import { Card, CardHeader } from "../components/ui/card";
+import { Badge } from "../components/ui/badge";
+import { Button } from "../components/ui/button";
 
 const recentOrders = [
   {
@@ -250,8 +250,8 @@ export const MainMenu: React.FC = () => {
                       index === 0
                         ? "bg-primary-100 text-primary-700"
                         : index === 1
-                        ? "bg-neutral-100 text-neutral-600"
-                        : "bg-neutral-50 text-neutral-400",
+                          ? "bg-neutral-100 text-neutral-600"
+                          : "bg-neutral-50 text-neutral-400",
                     ].join(" ")}
                   >
                     {index + 1}

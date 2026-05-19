@@ -1,7 +1,7 @@
 import React, { useState } from "react";
-import { Card, CardHeader } from "../components/ui/Card";
-import { Badge } from "../components/ui/Badge";
-import { Button } from "../components/ui/Button";
+import { Card, CardHeader } from "../components/ui/card";
+import { Badge } from "../components/ui/badge";
+import { Button } from "../components/ui/button";
 
 const periods = ["Today", "This Week", "This Month", "This Year"];
 
@@ -350,8 +350,8 @@ export const SalesReport: React.FC = () => {
                         txn.method === "Card"
                           ? "info"
                           : txn.method === "Cash"
-                          ? "success"
-                          : "secondary"
+                            ? "success"
+                            : "secondary"
                       }
                     >
                       {txn.method}
