@@ -2,13 +2,17 @@ import { createSlice, createAsyncThunk, PayloadAction } from "@reduxjs/toolkit";
 
 interface ActiveRoleState {
   activeOrganizationId: string | null;
+  activeOrganizationName: string | null;
   activeTenantId: string | null;
+  activeTenantName: string | null;
   activeRole: string | null;
 }
 
 const initialState: ActiveRoleState = {
   activeOrganizationId: null,
+  activeOrganizationName: null,
   activeTenantId: null,
+  activeTenantName: null,
   activeRole: null,
 };
 
@@ -25,7 +29,7 @@ const activeRoleSlice = createSlice({
     setValues: (state, action: PayloadAction<Partial<ActiveRoleState>>) => {
       return { ...state, ...action.payload };
     },
-    resetActiveRoleState: () => initialState,
+    resetActiveRoleState: () => ({ ...initialState }),
   },
 });
 

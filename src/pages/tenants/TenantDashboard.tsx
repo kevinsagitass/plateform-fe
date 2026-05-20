@@ -2,20 +2,18 @@ import { useState } from "react";
 import { Layout } from "@/layouts/Layout";
 import { PageKey } from "@/layouts/Sidebar";
 import { useAppSelector } from "@/store/hooks";
-import OrganizationHome from "@/components/organizations/OrganizationHome";
-import TenantHome from "@/components/tenants/TenantHome";
 
-const HomePage = () => {
+const TenantDashboard = () => {
   const { activeOrganizationId } = useAppSelector((state) => state.role);
-  const [currentPage, setCurrentPage] = useState<PageKey>("home");
+  const [currentPage, setCurrentPage] = useState<PageKey>("dashboard");
 
   return (
     <Layout currentPage={currentPage} onNavigate={setCurrentPage}>
       <div className="min-h-screen bg-surface-secondary font-sans">
-        {activeOrganizationId != null ? <TenantHome /> : <OrganizationHome />}
+        Hellow Tenant
       </div>
     </Layout>
   );
 };
 
-export default HomePage;
+export default TenantDashboard;

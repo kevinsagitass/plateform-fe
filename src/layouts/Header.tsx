@@ -1,5 +1,7 @@
 import React from "react";
 import { PageKey } from "./Sidebar";
+import BreadcrumbNav, { BreadcrumbItem } from "@/components/ui/BreadcrumbNav";
+import { Home } from "lucide-react";
 
 interface HeaderProps {
   currentPage: PageKey;
@@ -54,9 +56,9 @@ export const Header: React.FC<HeaderProps> = ({
         <h1 className="font-display font-bold text-neutral-900 text-lg leading-tight truncate">
           {title}
         </h1>
-        <p className="text-xs text-neutral-400 hidden sm:block truncate">
-          {subtitle}
-        </p>
+        <div className="text-xs text-neutral-400 hidden sm:block truncate">
+          <BreadcrumbNav />
+        </div>
       </div>
 
       {/* Right actions */}

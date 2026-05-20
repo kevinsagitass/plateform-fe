@@ -11,6 +11,8 @@ import AuthPage from "./pages/AuthPage";
 import Terms from "./pages/guest/Terms";
 import Privacy from "./pages/guest/Privacy";
 import HomePage from "./pages/HomePage";
+import OrgDashboard from "./pages/organizations/OrgDashboard";
+import TenantDashboard from "./pages/tenants/TenantDashboard";
 
 export default function App() {
   return (
@@ -30,9 +32,7 @@ export default function App() {
         <HelmetProvider>
           <Routes>
             <Route element={<GuestRoute />}>
-              {/* <Route path="/register" element={<Register />} />
-              <Route path="/login" element={<Login />} />
-              <Route path="/auth/callback" element={<AuthCallbackPage />} /> */}
+              {/* <Route path="/auth/callback" element={<AuthCallbackPage />} /> */}
               <Route path="/auth" element={<AuthPage />} />
               <Route path="/" element={<LandingPage />} />
               <Route path="/terms" element={<Terms />} />
@@ -41,20 +41,20 @@ export default function App() {
 
             <Route element={<ProtectedRoute />}>
               <Route path="/home" element={<HomePage />}></Route>
-              {/* <Route path="/organization/:orgId">
+              <Route path="/organization/:orgId">
                 <Route path="dashboard" element={<OrgDashboard />} />
-                <Route path="tenants" element={<Tenants />} />
+                {/* <Route path="tenants" element={<Tenants />} />
                 <Route path="reports" element={<OrgReports />} />{" "}
-                <Route path="settings" element={<OrgSettings />} />
-              </Route> */}
+                <Route path="settings" element={<OrgSettings />} /> */}
+              </Route>
 
-              {/* <Route path="/organization/:orgId/tenant/:tenantId">
+              <Route path="/organization/:orgId/tenant/:tenantId">
                 <Route path="dashboard" element={<TenantDashboard />} />
-                <Route path="tables" element={<Tables />} />
+                {/* <Route path="tables" element={<Tables />} />
                 <Route path="orders" element={<Orders />} />
                 <Route path="reports" element={<TenantReports />} />{" "}
-                <Route path="settings" element={<TenantSettings />} />
-              </Route> */}
+                <Route path="settings" element={<TenantSettings />} /> */}
+              </Route>
             </Route>
           </Routes>
         </HelmetProvider>

@@ -8,6 +8,7 @@ import {
   Grid2X2CheckIcon,
   BookCheckIcon,
   StoreIcon,
+  ChartPieIcon,
 } from "lucide-react";
 
 export type Role = "OWNER" | "ADMIN" | "STORE_MANAGER" | "CASHIER" | "COOK";
@@ -28,10 +29,16 @@ export const menus: Record<Role, MenuConfig> = {
   OWNER: {
     organization: [
       {
+        key: "home",
+        label: "Home",
+        path: "/home",
+        icon: HomeIcon,
+      },
+      {
         key: "dashboard",
         label: "Dashboard",
         path: (params) => `/organization/${params.orgId}/dashboard`,
-        icon: HomeIcon,
+        icon: ChartPieIcon,
       },
       {
         key: "users",
@@ -54,24 +61,30 @@ export const menus: Record<Role, MenuConfig> = {
     ],
     tenant: [
       {
+        key: "home",
+        label: "Home",
+        path: "/home",
+        icon: HomeIcon,
+      },
+      {
         key: "dashboard",
         label: "Dashboard",
         path: (params) =>
-          `/organization/${params.orgId}/${params.tenantId}/dashboard`,
-        icon: HomeIcon,
+          `/organization/${params.orgId}/tenant/${params.tenantId}/dashboard`,
+        icon: ChartPieIcon,
       },
       {
         key: "users",
         label: "Tenant Users",
         path: (params) =>
-          `/organization/${params.orgId}/${params.tenantId}/users`,
+          `/organization/${params.orgId}/tenant/${params.tenantId}/users`,
         icon: UsersIcon,
       },
       {
         key: "reports",
         label: "Reports",
         path: (params) =>
-          `/organization/${params.orgId}/${params.tenantId}/dashboard`,
+          `/organization/${params.orgId}/tenant/${params.tenantId}/dashboard`,
         icon: ChartBarIcon,
       },
     ],
@@ -80,10 +93,16 @@ export const menus: Record<Role, MenuConfig> = {
   ADMIN: {
     organization: [
       {
+        key: "home",
+        label: "Home",
+        path: "/home",
+        icon: HomeIcon,
+      },
+      {
         key: "dashboard",
         label: "Dashboard",
         path: (params) => `/organization/${params.orgId}/dashboard`,
-        icon: HomeIcon,
+        icon: ChartPieIcon,
       },
       {
         key: "users",
@@ -106,133 +125,178 @@ export const menus: Record<Role, MenuConfig> = {
     ],
     tenant: [
       {
+        key: "home",
+        label: "Home",
+        path: "/home",
+        icon: HomeIcon,
+      },
+      {
         key: "dashboard",
         label: "Dashboard",
         path: (params) =>
-          `/organization/${params.orgId}/${params.tenantId}/dashboard`,
-        icon: HomeIcon,
+          `/organization/${params.orgId}/tenant/${params.tenantId}/dashboard`,
+        icon: ChartPieIcon,
       },
       {
         key: "users",
         label: "Tenant Users",
         path: (params) =>
-          `/organization/${params.orgId}/${params.tenantId}/users`,
+          `/organization/${params.orgId}/tenant/${params.tenantId}/users`,
         icon: UsersIcon,
       },
       {
         key: "tables",
         label: "Tables",
         path: (params) =>
-          `/organization/${params.orgId}/${params.tenantId}/tables`,
+          `/organization/${params.orgId}/tenant/${params.tenantId}/tables`,
         icon: Grid2X2CheckIcon,
       },
       {
         key: "reports",
         label: "Reports",
         path: (params) =>
-          `/organization/${params.orgId}/${params.tenantId}/dashboard`,
+          `/organization/${params.orgId}/tenant/${params.tenantId}/dashboard`,
         icon: ChartBarIcon,
       },
     ],
   },
 
   STORE_MANAGER: {
-    organization: [],
+    organization: [
+      {
+        key: "home",
+        label: "Home",
+        path: "/home",
+        icon: HomeIcon,
+      },
+    ],
     tenant: [
+      {
+        key: "home",
+        label: "Home",
+        path: "/home",
+        icon: HomeIcon,
+      },
       {
         key: "dashboard",
         label: "Dashboard",
         path: (params) =>
-          `/organization/${params.orgId}/${params.tenantId}/dashboard`,
-        icon: HomeIcon,
+          `/organization/${params.orgId}/tenant/${params.tenantId}/dashboard`,
+        icon: ChartPieIcon,
       },
       {
         key: "users",
         label: "Users",
         path: (params) =>
-          `/organization/${params.orgId}/${params.tenantId}/users`,
+          `/organization/${params.orgId}/tenant/${params.tenantId}/users`,
         icon: UsersIcon,
       },
       {
         key: "tables",
         label: "Tables",
         path: (params) =>
-          `/organization/${params.orgId}/${params.tenantId}/tables`,
+          `/organization/${params.orgId}/tenant/${params.tenantId}/tables`,
         icon: Grid2X2CheckIcon,
       },
       {
         key: "menus",
         label: "Menus",
         path: (params) =>
-          `/organization/${params.orgId}/${params.tenantId}/menus`,
+          `/organization/${params.orgId}/tenant/${params.tenantId}/menus`,
         icon: UtensilsIcon,
       },
       {
         key: "orders",
         label: "Orders",
         path: (params) =>
-          `/organization/${params.orgId}/${params.tenantId}/orders`,
+          `/organization/${params.orgId}/tenant/${params.tenantId}/orders`,
         icon: ShoppingCartIcon,
       },
       {
         key: "reservations",
         label: "Reservations",
         path: (params) =>
-          `/organization/${params.orgId}/${params.tenantId}/reservations`,
+          `/organization/${params.orgId}/tenant/${params.tenantId}/reservations`,
         icon: BookCheckIcon,
       },
       {
         key: "reports",
         label: "Reports",
         path: (params) =>
-          `/organization/${params.orgId}/${params.tenantId}/reports`,
+          `/organization/${params.orgId}/tenant/${params.tenantId}/reports`,
         icon: ChartBarIcon,
       },
     ],
   },
 
   CASHIER: {
-    organization: [],
+    organization: [
+      {
+        key: "home",
+        label: "Home",
+        path: "/home",
+        icon: HomeIcon,
+      },
+    ],
     tenant: [
+      {
+        key: "home",
+        label: "Home",
+        path: "/home",
+        icon: HomeIcon,
+      },
       {
         key: "dashboard",
         label: "Dashboard",
         path: (params) =>
-          `/organization/${params.orgId}/${params.tenantId}/dashboard`,
-        icon: HomeIcon,
+          `/organization/${params.orgId}/tenant/${params.tenantId}/dashboard`,
+        icon: ChartPieIcon,
       },
       {
         key: "orders",
         label: "Orders",
         path: (params) =>
-          `/organization/${params.orgId}/${params.tenantId}/orders`,
+          `/organization/${params.orgId}/tenant/${params.tenantId}/orders`,
         icon: ShoppingCartIcon,
       },
       {
         key: "reservations",
         label: "Reservations",
         path: (params) =>
-          `/organization/${params.orgId}/${params.tenantId}/reservations`,
+          `/organization/${params.orgId}/tenant/${params.tenantId}/reservations`,
         icon: BookCheckIcon,
       },
     ],
   },
 
   COOK: {
-    organization: [],
+    organization: [
+      {
+        key: "home",
+        label: "Home",
+        path: "/home",
+        icon: HomeIcon,
+      },
+    ],
     tenant: [
+      {
+        key: "home",
+        label: "Home",
+        path: "/home",
+        icon: HomeIcon,
+      },
       {
         key: "dashboard",
         label: "Dashboard",
         path: (params) =>
-          `/organization/${params.orgId}/${params.tenantId}/dashboard`,
-        icon: HomeIcon,
+          `/organization/${params.orgId}/tenant/${params.tenantId}/dashboard`,
+        icon: ChartPieIcon,
       },
       {
         key: "stocks",
         label: "Stocks",
         path: (params) =>
-          `/organization/${params.orgId}/${params.tenantId}/stocks`,
+          `/organization/${params.orgId}/tenant/${params.tenantId}/stocks`,
         icon: WarehouseIcon,
       },
     ],

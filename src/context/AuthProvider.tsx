@@ -4,6 +4,9 @@ import toast from "react-hot-toast";
 import { useNavigate } from "react-router-dom";
 import { getMe, loginUser, registerUser } from "../services/AuthService";
 import type { RegisterPayload, User } from "../types/auth";
+import { resetActiveRoleState } from "@/store/slices/roleSlice";
+import { persistor } from "@/store";
+import { useAppDispatch } from "@/store/hooks";
 
 interface AuthProviderProps {
   children: ReactNode;
@@ -13,7 +16,7 @@ function AuthProvider({ children }: AuthProviderProps) {
   const [user, setUser] = useState<User | null>(null);
 
   const [token, setToken] = useState<string>(
-    () => localStorage.getItem("token") || "",
+    () => localStorage.getItem("token") || ""
   );
 
   const [isAuthenticated, setIsAuthenticated] = useState<boolean>(false);
@@ -21,6 +24,7 @@ function AuthProvider({ children }: AuthProviderProps) {
   const [isLoadingAuth, setIsLoadingAuth] = useState<boolean>(true);
 
   const navigate = useNavigate();
+  const dispatch = useAppDispatch();
 
   const setAuth = (userData: User, tokenData: string): void => {
     setUser(userData);
@@ -36,6 +40,7 @@ function AuthProvider({ children }: AuthProviderProps) {
     setToken("");
     setIsAuthenticated(false);
 
+    localStorage.removeItem("persist:role");
     localStorage.removeItem("token");
     localStorage.removeItem("user");
   };
@@ -71,6 +76,8 @@ function AuthProvider({ children }: AuthProviderProps) {
 
   const logout = (): void => {
     clearAuth();
+    dispatch(resetActiveRoleState());
+    persistor.purge();
 
     toast.success("Logout berhasil");
 

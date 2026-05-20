@@ -11,3 +11,13 @@ export const getUserOrganizations = async (): Promise<
 
   return result.data;
 };
+
+export const getUserOrganizationRole = async (
+  organizationId: string
+): Promise<ApiResponse<string>> => {
+  const result = await api.get<ApiResponse<string>>(
+    `/organizations/${organizationId}/role`
+  );
+
+  return result.data;
+};
