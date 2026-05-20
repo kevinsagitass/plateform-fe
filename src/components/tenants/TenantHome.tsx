@@ -1,9 +1,9 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { Store, Search, Plus, ArrowRight, Loader2 } from "lucide-react";
 import TenantCard from "@/components/tenants/TenantCard";
 import { useAppDispatch, useAppSelector } from "@/store/hooks";
 import { setValues } from "@/store/slices/roleSlice";
-import { useQuery } from "@tanstack/react-query";
+import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { getUserTenantRole, getUserTenants } from "@/services/TenantService";
 import toast from "react-hot-toast";
 import { useNavigate } from "react-router-dom";
@@ -11,8 +11,9 @@ import { menus, resolvePath } from "@/config/menu";
 
 const TenantHome = () => {
   const dispatch = useAppDispatch();
+  const queryClient = useQueryClient();
   const navigate = useNavigate();
-  const { activeOrganizationId, activeTenantId, activeRole } = useAppSelector(
+  const { activeOrganizationId, activeRole } = useAppSelector(
     (state) => state.role
   );
 
@@ -27,6 +28,10 @@ const TenantHome = () => {
   });
 
   const tenants = tenantData?.data || [];
+
+  useEffect(() => {
+    queryClient.invalidateQueries({ queryKey: ["tenants"] });
+  }, []);
 
   const filtered = tenants.filter(
     (tenant) =>

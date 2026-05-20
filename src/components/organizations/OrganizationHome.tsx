@@ -1,11 +1,9 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { Building2, Search, Plus, ArrowRight, Loader2 } from "lucide-react";
 import OrganizationCard from "@/components/organizations/OrganizationCard";
-import { Layout } from "@/layouts/Layout";
-import { PageKey } from "@/layouts/Sidebar";
 import { useAppDispatch } from "@/store/hooks";
 import { setValues } from "../../store/slices/roleSlice";
-import { useQuery } from "@tanstack/react-query";
+import { useQuery, useQueryClient } from "@tanstack/react-query";
 import {
   getUserOrganizationRole,
   getUserOrganizations,
@@ -15,7 +13,7 @@ import toast from "react-hot-toast";
 
 const OrganizationHome = () => {
   const dispatch = useAppDispatch();
-  const [currentPage, setCurrentPage] = useState<PageKey>("home");
+  const queryClient = useQueryClient();
   const [search, setSearch] = useState("");
   const [selectedId, setSelectedId] = useState<string | null>(null);
   const [isLoading, setIsLoading] = useState(false);
@@ -26,6 +24,10 @@ const OrganizationHome = () => {
   });
 
   const organizations = organizationData?.data || [];
+
+  useEffect(() => {
+    queryClient.invalidateQueries({ queryKey: ["organizations"] });
+  }, []);
 
   const filtered = organizations.filter(
     (org) =>
