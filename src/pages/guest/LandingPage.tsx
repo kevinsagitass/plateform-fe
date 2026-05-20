@@ -96,7 +96,7 @@ const pricingPlans = [
       "Solusi lengkap untuk restoran berkembang dengan operasional lebih kompleks.",
     features: [
       "Semua fitur Starter",
-      "Multi outlet",
+      "Maksimum 10 outlet restoran",
       "Analitik penjualan by AI",
       "Manajemen reservasi",
       "Fitur generate caption untuk iklan by AI",
@@ -112,10 +112,10 @@ const pricingPlans = [
     features: [
       "Semua fitur professional",
       "Dedicated support",
-      "Unlimited franchise / bisnis",
       "Unlimited outlet",
       "Prioritas maintenance",
       "Export data & laporan",
+      "Integrasi ke Whatsapp",
     ],
     highlighted: false,
   },
@@ -284,12 +284,13 @@ export default function LandingPage() {
 
             <p className="mt-6 max-w-xl text-lg leading-8 text-neutral-600">
               Plateform membantu anda dalam mengelola bisnis anda menjadi mudah,
-              efisien, dan cepat. Buat akun dan dapatkan free trial selama 30 Hari untuk paket Basic!
+              efisien, dan cepat. Buat akun dan dapatkan free trial selama 30
+              Hari untuk paket Basic!
             </p>
 
             <div className="mt-10 flex flex-col gap-4 sm:flex-row">
               <Button className="group h-12 rounded-full bg-primary-500 px-7 text-base hover:bg-primary-600">
-                Explore Package
+                <a href="#pricing">Explore Package</a>
                 <ArrowRight className="ml-2 transition-transform group-hover:translate-x-1" />
               </Button>
 
@@ -460,10 +461,6 @@ export default function LandingPage() {
                         <Clock3 size={15} />
                         Sistem terintegrasi
                       </div>
-
-                      <button className="text-sm font-medium text-primary-600">
-                        Pelajari Lebih Lanjut
-                      </button>
                     </div>
                   </div>
                 </div>

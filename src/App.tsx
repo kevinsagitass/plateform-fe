@@ -10,6 +10,7 @@ import ProtectedRoute from "./helpers/ProtectedRoute";
 import AuthPage from "./pages/AuthPage";
 import Terms from "./pages/guest/Terms";
 import Privacy from "./pages/guest/Privacy";
+import HomePage from "./pages/HomePage";
 
 export default function App() {
   return (
@@ -39,7 +40,21 @@ export default function App() {
             </Route>
 
             <Route element={<ProtectedRoute />}>
-              <Route path="/dashboard" element={<Dashboard />} />
+              <Route path="/home" element={<HomePage />}></Route>
+              {/* <Route path="/organization/:orgId">
+                <Route path="dashboard" element={<OrgDashboard />} />
+                <Route path="tenants" element={<Tenants />} />
+                <Route path="reports" element={<OrgReports />} />{" "}
+                <Route path="settings" element={<OrgSettings />} />
+              </Route> */}
+
+              {/* <Route path="/organization/:orgId/tenant/:tenantId">
+                <Route path="dashboard" element={<TenantDashboard />} />
+                <Route path="tables" element={<Tables />} />
+                <Route path="orders" element={<Orders />} />
+                <Route path="reports" element={<TenantReports />} />{" "}
+                <Route path="settings" element={<TenantSettings />} />
+              </Route> */}
             </Route>
           </Routes>
         </HelmetProvider>

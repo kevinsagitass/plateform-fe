@@ -61,7 +61,7 @@ function AuthProvider({ children }: AuthProviderProps) {
 
       toast.success(`Welcome back, ${user.name}`);
 
-      navigate("/dashboard");
+      navigate("/home");
     } catch (err: any) {
       toast.error(err.response?.data?.message || "Login gagal");
 

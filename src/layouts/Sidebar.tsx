@@ -1,14 +1,21 @@
 import React from "react";
 import { useAuth } from "@/hooks/useAuth";
+import { menus, resolvePath } from "@/config/menu";
+import { useAppSelector } from "@/store/hooks";
+import { useParams } from "react-router-dom";
+import { HomeIcon } from "lucide-react";
 
-export type PageKey = "dashboard" | "sales" | "settings";
-
-interface NavItem {
-  key: PageKey;
-  label: string;
-  icon: React.ReactNode;
-  badge?: number;
-}
+export type PageKey =
+  | "home"
+  | "dashboard"
+  | "users"
+  | "tenants"
+  | "reports"
+  | "tables"
+  | "orders"
+  | "reservations"
+  | "stocks"
+  | "settings";
 
 interface SidebarProps {
   currentPage: PageKey;
@@ -17,72 +24,6 @@ interface SidebarProps {
   onClose: () => void;
 }
 
-const navItems: NavItem[] = [
-  {
-    key: "dashboard",
-    label: "Dashboard",
-    icon: (
-      <svg
-        className="w-5 h-5"
-        fill="none"
-        viewBox="0 0 24 24"
-        stroke="currentColor"
-      >
-        <path
-          strokeLinecap="round"
-          strokeLinejoin="round"
-          strokeWidth={1.8}
-          d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6"
-        />
-      </svg>
-    ),
-  },
-  {
-    key: "sales",
-    label: "Sales Report",
-    icon: (
-      <svg
-        className="w-5 h-5"
-        fill="none"
-        viewBox="0 0 24 24"
-        stroke="currentColor"
-      >
-        <path
-          strokeLinecap="round"
-          strokeLinejoin="round"
-          strokeWidth={1.8}
-          d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"
-        />
-      </svg>
-    ),
-  },
-  {
-    key: "settings",
-    label: "Settings",
-    icon: (
-      <svg
-        className="w-5 h-5"
-        fill="none"
-        viewBox="0 0 24 24"
-        stroke="currentColor"
-      >
-        <path
-          strokeLinecap="round"
-          strokeLinejoin="round"
-          strokeWidth={1.8}
-          d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z"
-        />
-        <path
-          strokeLinecap="round"
-          strokeLinejoin="round"
-          strokeWidth={1.8}
-          d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"
-        />
-      </svg>
-    ),
-  },
-];
-
 export const Sidebar: React.FC<SidebarProps> = ({
   currentPage,
   onNavigate,
@@ -90,6 +31,24 @@ export const Sidebar: React.FC<SidebarProps> = ({
   onClose,
 }) => {
   const { logout, user } = useAuth();
+  const { orgId, tenantId } = useParams();
+  const activeRole = useAppSelector((state) => state.role?.activeRole);
+  const context = tenantId ? "tenant" : "organization";
+  const navItems = activeRole
+    ? menus[activeRole][context]
+    : [
+        {
+          key: "home",
+          label: "Home",
+          path: "/home",
+          icon: HomeIcon,
+        },
+      ];
+
+  const params = {
+    orgId: orgId ?? null,
+    tenantId: tenantId ?? null,
+  };
 
   return (
     <>
@@ -140,84 +99,57 @@ export const Sidebar: React.FC<SidebarProps> = ({
         </div>
 
         {/* Nav */}
-        <nav className="flex-1 p-3 overflow-y-auto">
-          <p className="text-2xs font-semibold text-neutral-400 uppercase tracking-widest px-3 mb-2 mt-1">
-            Main Menu
-          </p>
-          <ul className="space-y-0.5">
-            {navItems.slice(0, 6).map((item) => (
-              <li key={item.key}>
-                <button
-                  onClick={() => {
-                    onNavigate(item.key);
-                    onClose();
-                  }}
-                  className={[
-                    "w-full flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium transition-all duration-150",
-                    currentPage === item.key
-                      ? "bg-primary-50 text-primary-700"
-                      : "text-neutral-600 hover:bg-neutral-50 hover:text-neutral-900",
-                  ].join(" ")}
-                >
-                  <span
-                    className={
-                      currentPage === item.key
-                        ? "text-primary-600"
-                        : "text-neutral-400"
-                    }
-                  >
-                    {item.icon}
-                  </span>
-                  <span className="flex-1 text-left">{item.label}</span>
-                  {item.badge && (
-                    <span className="w-5 h-5 rounded-full bg-primary-500 text-white text-2xs font-bold flex items-center justify-center">
-                      {item.badge}
-                    </span>
-                  )}
-                  {currentPage === item.key && (
-                    <span className="w-1.5 h-1.5 rounded-full bg-primary-500" />
-                  )}
-                </button>
-              </li>
-            ))}
-          </ul>
+        {navItems && (
+          <nav className="flex-1 p-3 overflow-y-auto">
+            <ul className="space-y-0.5">
+              {navItems.map((item) => {
+                const Icon = item.icon; // ← ⚠️ harus capitalize
 
-          <p className="text-2xs font-semibold text-neutral-400 uppercase tracking-widest px-3 mb-2 mt-5">
-            System
-          </p>
-          <ul className="space-y-0.5">
-            {navItems.slice(6).map((item) => (
-              <li key={item.key}>
-                <button
-                  onClick={() => {
-                    onNavigate(item.key);
-                    onClose();
-                  }}
-                  className={[
-                    "w-full flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium transition-all duration-150",
-                    currentPage === item.key
-                      ? "bg-primary-50 text-primary-700"
-                      : "text-neutral-600 hover:bg-neutral-50 hover:text-neutral-900",
-                  ].join(" ")}
-                >
-                  <span
-                    className={
-                      currentPage === item.key
-                        ? "text-primary-600"
-                        : "text-neutral-400"
-                    }
-                  >
-                    {item.icon}
-                  </span>
-                  <span>{item.label}</span>
-                </button>
-              </li>
-            ))}
-          </ul>
-        </nav>
+                return (
+                  <li key={item.key}>
+                    <button
+                      onClick={() => {
+                        onNavigate(resolvePath(item.path, params));
+                        onClose();
+                      }}
+                      className={[
+                        "w-full flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium transition-all duration-150",
+                        currentPage === item.key
+                          ? "bg-primary-50 text-primary-700"
+                          : "text-neutral-600 hover:bg-neutral-50 hover:text-neutral-900",
+                      ].join(" ")}
+                    >
+                      {/* ✅ Fix disini */}
+                      <Icon
+                        size={18}
+                        className={
+                          currentPage === item.key
+                            ? "text-primary-600"
+                            : "text-neutral-400"
+                        }
+                      />
+
+                      <span className="flex-1 text-left">{item.label}</span>
+
+                      {item.badge && (
+                        <span className="w-5 h-5 rounded-full bg-primary-500 text-white text-2xs font-bold flex items-center justify-center">
+                          {item.badge}
+                        </span>
+                      )}
+
+                      {currentPage === item.key && (
+                        <span className="w-1.5 h-1.5 rounded-full bg-primary-500" />
+                      )}
+                    </button>
+                  </li>
+                );
+              })}
+            </ul>
+          </nav>
+        )}
 
         {/* User Profile */}
-        <div className="border-t border-neutral-100 p-3">
+        <div className="mt-auto shrink-0 border-t border-neutral-100 p-3">
           <div className="rounded-2xl border border-neutral-100 bg-neutral-50/70 p-3">
             <div className="flex items-center gap-3">
               <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-gradient-warm text-sm font-bold text-white">

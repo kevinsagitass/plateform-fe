@@ -7,13 +7,13 @@ interface HeaderProps {
 }
 
 const pageTitles: Record<PageKey, { title: string; subtitle: string }> = {
+  home: {
+    title: "Home",
+    subtitle: "Welcome back, what should we do today ?",
+  },
   dashboard: {
     title: "Dashboard",
     subtitle: "Welcome back, here's what's happening today",
-  },
-  sales: {
-    title: "Sales Report",
-    subtitle: "Analyze your revenue and performance metrics",
   },
   settings: {
     title: "Settings",
