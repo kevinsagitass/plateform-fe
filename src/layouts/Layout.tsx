@@ -1,6 +1,7 @@
-import React, { useState } from "react";
+import { useState } from "react";
 import { Sidebar, PageKey } from "./Sidebar";
 import { Header } from "./Header";
+import CollapsedBreadcrumb from "@/components/ui/CollapsedBreadcrumb";
 
 interface LayoutProps {
   children: React.ReactNode;
@@ -29,7 +30,12 @@ export const Layout: React.FC<LayoutProps> = ({
           onMenuToggle={() => setSidebarOpen(true)}
         />
         <main className="flex-1 overflow-y-auto p-4 lg:p-6">
-          <div className="animate-fade-in">{children}</div>
+          <div className="animate-fade-in">
+            <div className="text-xs text-neutral-400 md:hidden truncate">
+              <CollapsedBreadcrumb />
+            </div>
+            {children}
+          </div>
         </main>
       </div>
     </div>

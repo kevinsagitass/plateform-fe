@@ -10,6 +10,11 @@ export default {
   ],
   theme: {
     extend: {
+      borderRadius: {
+        lg: "var(--radius)",
+        md: "calc(var(--radius) - 2px)",
+        sm: "calc(var(--radius) - 4px)",
+      },
       colors: {
         primary: {
           50: "#fff8ed",
@@ -49,6 +54,8 @@ export default {
           800: "#a01414",
           900: "#841818",
           950: "#480707",
+          DEFAULT: "hsl(var(--accent))",
+          foreground: "hsl(var(--accent-foreground))",
         },
         neutral: {
           50: "#fafaf8",
@@ -96,6 +103,19 @@ export default {
           served: "#8b5cf6",
           cancelled: "#ef4444",
           paid: "#10b981",
+        },
+        border: "hsl(var(--border))",
+        input: "hsl(var(--input))",
+        ring: "hsl(var(--ring))",
+        background: "hsl(var(--background))",
+        foreground: "hsl(var(--foreground))",
+        popover: {
+          DEFAULT: "hsl(var(--popover))",
+          foreground: "hsl(var(--popover-foreground))",
+        },
+        muted: {
+          DEFAULT: "hsl(var(--muted))",
+          foreground: "hsl(var(--muted-foreground))",
         },
       },
       fontFamily: {

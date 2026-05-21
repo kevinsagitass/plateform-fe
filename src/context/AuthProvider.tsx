@@ -7,6 +7,8 @@ import type { RegisterPayload, User } from "../types/auth";
 import { resetActiveRoleState } from "@/store/slices/roleSlice";
 import { persistor } from "@/store";
 import { useAppDispatch } from "@/store/hooks";
+import { SubscriptionConfig } from "@/types/subscription";
+import { getSubscriptionConfig } from "@/services/SubscriptionService";
 
 interface AuthProviderProps {
   children: ReactNode;
@@ -14,6 +16,8 @@ interface AuthProviderProps {
 
 function AuthProvider({ children }: AuthProviderProps) {
   const [user, setUser] = useState<User | null>(null);
+  const [subscriptionConfig, setSubscriptionConfig] =
+    useState<SubscriptionConfig | null>();
 
   const [token, setToken] = useState<string>(
     () => localStorage.getItem("token") || ""
@@ -64,6 +68,14 @@ function AuthProvider({ children }: AuthProviderProps) {
 
       setAuth(user, token);
 
+      const subscriptionRes = await getSubscriptionConfig(
+        user.subscription.plan
+      );
+
+      const subscriptionConfig = subscriptionRes.data;
+
+      setSubscriptionConfig(subscriptionConfig);
+
       toast.success(`Welcome back, ${user.name}`);
 
       navigate("/home");
@@ -96,8 +108,16 @@ function AuthProvider({ children }: AuthProviderProps) {
       try {
         const res = await getMe();
 
-        setUser(res.user);
-        setToken(storedToken);
+        setAuth(res.user, storedToken);
+
+        const subscriptionRes = await getSubscriptionConfig(
+          res.user.subscription.plan
+        );
+
+        const subscriptionConfig = subscriptionRes.data;
+
+        setSubscriptionConfig(subscriptionConfig);
+
         setIsAuthenticated(true);
       } catch (err) {
         console.log(err);
@@ -116,6 +136,7 @@ function AuthProvider({ children }: AuthProviderProps) {
       value={{
         user,
         token,
+        subscriptionConfig,
         isAuthenticated,
         isLoadingAuth,
 

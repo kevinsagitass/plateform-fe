@@ -83,7 +83,7 @@ const pricingPlans = [
       "Manajemen pesanan dengan Pembayaran terintegrasi",
       "Dashboard pesanan realtime",
       "Dashboard penjualan",
-      "1 outlet restoran",
+      "1 bisnis & 1 tenant restoran",
       "Laporan harian",
       "Akses staff & role",
     ],
@@ -96,7 +96,7 @@ const pricingPlans = [
       "Solusi lengkap untuk restoran berkembang dengan operasional lebih kompleks.",
     features: [
       "Semua fitur Starter",
-      "Maksimum 10 outlet restoran",
+      "Maksimum 3 bisnis & 5 tenant per bisnis",
       "Analitik penjualan by AI",
       "Manajemen reservasi",
       "Fitur generate caption untuk iklan by AI",
@@ -112,7 +112,7 @@ const pricingPlans = [
     features: [
       "Semua fitur professional",
       "Dedicated support",
-      "Unlimited outlet",
+      "Unlimited bisnis & unlimited outlet",
       "Prioritas maintenance",
       "Export data & laporan",
       "Integrasi ke Whatsapp",

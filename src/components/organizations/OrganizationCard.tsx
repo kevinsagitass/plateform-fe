@@ -1,13 +1,12 @@
 import {
   Building2,
-  MapPin,
   Users,
   ChevronRight,
   CheckCircle2,
+  Store,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { OrganizationUser } from "@/types/organization";
-import { formatDateClient } from "@/helpers/dateFormatter";
 
 interface OrganizationCardProps {
   organization: OrganizationUser;
@@ -66,12 +65,14 @@ const OrganizationCard = ({
               )}
             </div>
 
-            <p className="text-xs text-accent-950 mt-0.5">
-              Current Plan : {organization.plan}
+            <p className="flex items-center text-xs text-accent-950 mt-0.5">
+              <Users size={10} className="mr-1" /> Total Staff{" "}
+              {organization.totalStaff}
             </p>
 
-            <p className="text-xs text-accent-950 mt-0.5">
-              Plan Active Until : {formatDateClient(organization.endDate)}
+            <p className="flex items-center text-xs text-accent-950 mt-0.5">
+              <Store size={10} className="mr-1" /> Total Tenant{" "}
+              {organization.totalTenant}
             </p>
           </div>
         </div>

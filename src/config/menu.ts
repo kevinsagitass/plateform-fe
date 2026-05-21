@@ -61,12 +61,6 @@ export const menus: Record<Role, MenuConfig> = {
     ],
     tenant: [
       {
-        key: "home",
-        label: "Home",
-        path: "/home",
-        icon: HomeIcon,
-      },
-      {
         key: "dashboard",
         label: "Dashboard",
         path: (params) =>
@@ -125,12 +119,6 @@ export const menus: Record<Role, MenuConfig> = {
     ],
     tenant: [
       {
-        key: "home",
-        label: "Home",
-        path: "/home",
-        icon: HomeIcon,
-      },
-      {
         key: "dashboard",
         label: "Dashboard",
         path: (params) =>
@@ -171,12 +159,6 @@ export const menus: Record<Role, MenuConfig> = {
       },
     ],
     tenant: [
-      {
-        key: "home",
-        label: "Home",
-        path: "/home",
-        icon: HomeIcon,
-      },
       {
         key: "dashboard",
         label: "Dashboard",
@@ -240,12 +222,6 @@ export const menus: Record<Role, MenuConfig> = {
     ],
     tenant: [
       {
-        key: "home",
-        label: "Home",
-        path: "/home",
-        icon: HomeIcon,
-      },
-      {
         key: "dashboard",
         label: "Dashboard",
         path: (params) =>
@@ -279,12 +255,6 @@ export const menus: Record<Role, MenuConfig> = {
       },
     ],
     tenant: [
-      {
-        key: "home",
-        label: "Home",
-        path: "/home",
-        icon: HomeIcon,
-      },
       {
         key: "dashboard",
         label: "Dashboard",

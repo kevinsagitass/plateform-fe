@@ -1,15 +1,17 @@
 import { useEffect, useState } from "react";
 import { Building2, Search, Plus, ArrowRight, Loader2 } from "lucide-react";
 import OrganizationCard from "@/components/organizations/OrganizationCard";
+import AddOrganizationModal from "@/components/organizations/AddOrganizationModal";
 import { useAppDispatch } from "@/store/hooks";
 import { setValues } from "../../store/slices/roleSlice";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 import {
+  createOrganization,
   getUserOrganizationRole,
   getUserOrganizations,
 } from "@/services/OrganizationService";
-import { formatDateClient } from "@/helpers/dateFormatter";
 import toast from "react-hot-toast";
+import { useAuth } from "@/hooks/useAuth";
 
 const OrganizationHome = () => {
   const dispatch = useAppDispatch();
@@ -17,6 +19,8 @@ const OrganizationHome = () => {
   const [search, setSearch] = useState("");
   const [selectedId, setSelectedId] = useState<string | null>(null);
   const [isLoading, setIsLoading] = useState(false);
+  const [isModalOpen, setIsModalOpen] = useState(false);
+  const { user, subscriptionConfig } = useAuth();
 
   const { data: organizationData } = useQuery({
     queryKey: ["organizations"],
@@ -29,11 +33,8 @@ const OrganizationHome = () => {
     queryClient.invalidateQueries({ queryKey: ["organizations"] });
   }, []);
 
-  const filtered = organizations.filter(
-    (org) =>
-      org.organizationName.toLowerCase().includes(search.toLowerCase()) ||
-      org.plan.toLowerCase().includes(search.toLowerCase()) ||
-      formatDateClient(org.endDate).toLowerCase().includes(search.toLowerCase())
+  const filtered = organizations.filter((org) =>
+    org.organizationName.toLowerCase().includes(search.toLowerCase())
   );
 
   const selectedOrg = organizations.find(
@@ -66,6 +67,24 @@ const OrganizationHome = () => {
       }
     } finally {
       setIsLoading(false);
+    }
+  };
+
+  const handleAddOrganization = async (name: string) => {
+    try {
+      await createOrganization({ name: name });
+      await queryClient.invalidateQueries({ queryKey: ["organizations"] });
+      toast.success(`"${name}" created successfully`);
+    } catch (error) {
+      if (error instanceof Error) {
+        toast.error(error.message);
+      } else if (typeof error === "string") {
+        toast.error(error);
+      } else {
+        toast.error("Failed to create organization");
+      }
+      // Re-throw so the modal stays open on error
+      throw error;
     }
   };
 
@@ -115,17 +134,21 @@ const OrganizationHome = () => {
             </div>
 
             {/* Add Button */}
-            <button
-              className="
-              flex items-center gap-2 px-4 py-2.5 text-sm font-medium
-              bg-gradient-warm text-white rounded-xl shadow-order
-              hover:shadow-lg hover:-translate-y-0.5
-              transition-all duration-200 flex-shrink-0
-            "
-            >
-              <Plus size={16} />
-              <span className="hidden sm:block">Add New</span>
-            </button>
+            {user.subscription.plan != "FREE" &&
+              organizations.length < subscriptionConfig.maxOrganization && (
+                <button
+                  onClick={() => setIsModalOpen(true)}
+                  className="
+                flex items-center gap-2 px-4 py-2.5 text-sm font-medium
+                bg-gradient-warm text-white rounded-xl shadow-order
+                hover:shadow-lg hover:-translate-y-0.5
+                transition-all duration-200 flex-shrink-0
+              "
+                >
+                  <Plus size={16} />
+                  <span className="hidden sm:block">Add New</span>
+                </button>
+              )}
           </div>
 
           {/* Stats */}
@@ -169,7 +192,7 @@ const OrganizationHome = () => {
                 No organization found
               </p>
               <p className="text-sm text-neutral-400">
-                Try different search keywords
+                Subscribe and Create One or Get Invited
               </p>
             </div>
           )}
@@ -227,6 +250,13 @@ const OrganizationHome = () => {
           </div>
         </div>
       </main>
+
+      {/* Add Organization Modal */}
+      <AddOrganizationModal
+        isOpen={isModalOpen}
+        onClose={() => setIsModalOpen(false)}
+        onSubmit={handleAddOrganization}
+      />
     </>
   );
 };

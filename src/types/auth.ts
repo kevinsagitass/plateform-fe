@@ -1,6 +1,9 @@
+import { Subscription, SubscriptionConfig } from "./subscription";
+
 export interface AuthContextType {
   user: User | null;
   token: string;
+  subscriptionConfig: SubscriptionConfig;
   isAuthenticated: boolean;
   isLoadingAuth: boolean;
 
@@ -26,6 +29,7 @@ export interface User {
   email: string;
   organizationRoles: OrganizationRole[];
   tenantRoles: TenantRole[];
+  subscription: Subscription;
 }
 
 export interface RegisterPayload {

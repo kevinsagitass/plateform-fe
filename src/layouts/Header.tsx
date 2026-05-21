@@ -1,25 +1,41 @@
-import React from "react";
 import { PageKey } from "./Sidebar";
-import BreadcrumbNav, { BreadcrumbItem } from "@/components/ui/BreadcrumbNav";
-import { Home } from "lucide-react";
+import BreadcrumbNav from "@/components/ui/BreadcrumbNav";
 
 interface HeaderProps {
   currentPage: PageKey;
   onMenuToggle: () => void;
 }
 
-const pageTitles: Record<PageKey, { title: string; subtitle: string }> = {
+const pageTitles: Record<PageKey, { title: string }> = {
   home: {
     title: "Home",
-    subtitle: "Welcome back, what should we do today ?",
   },
   dashboard: {
     title: "Dashboard",
-    subtitle: "Welcome back, here's what's happening today",
+  },
+  users: {
+    title: "Users",
   },
   settings: {
     title: "Settings",
-    subtitle: "Configure your restaurant preferences",
+  },
+  tenants: {
+    title: "",
+  },
+  reports: {
+    title: "",
+  },
+  tables: {
+    title: "",
+  },
+  orders: {
+    title: "",
+  },
+  reservations: {
+    title: "",
+  },
+  stocks: {
+    title: "",
   },
 };
 
@@ -27,7 +43,7 @@ export const Header: React.FC<HeaderProps> = ({
   currentPage,
   onMenuToggle,
 }) => {
-  const { title, subtitle } = pageTitles[currentPage];
+  const { title } = pageTitles[currentPage];
 
   return (
     <header className="h-16 bg-surface border-b border-neutral-100 flex items-center px-4 lg:px-6 gap-4 sticky top-0 z-30">

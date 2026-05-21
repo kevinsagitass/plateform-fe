@@ -1,5 +1,3 @@
-import React from "react";
-import { Dashboard } from "./pages/Dashboard";
 import { BrowserRouter, Route, Routes } from "react-router-dom";
 import AuthProvider from "./context/AuthProvider";
 import { Toaster } from "react-hot-toast";
@@ -13,6 +11,8 @@ import Privacy from "./pages/guest/Privacy";
 import HomePage from "./pages/HomePage";
 import OrgDashboard from "./pages/organizations/OrgDashboard";
 import TenantDashboard from "./pages/tenants/TenantDashboard";
+import OrgUsers from "./pages/organizations/OrgUsers";
+import Tenants from "./pages/organizations/Tenants";
 
 export default function App() {
   return (
@@ -43,8 +43,9 @@ export default function App() {
               <Route path="/home" element={<HomePage />}></Route>
               <Route path="/organization/:orgId">
                 <Route path="dashboard" element={<OrgDashboard />} />
-                {/* <Route path="tenants" element={<Tenants />} />
-                <Route path="reports" element={<OrgReports />} />{" "}
+                <Route path="users" element={<OrgUsers />} />
+                <Route path="tenants" element={<Tenants />} />
+                {/* <Route path="reports" element={<OrgReports />} />{" "}
                 <Route path="settings" element={<OrgSettings />} /> */}
               </Route>
 

@@ -4,6 +4,7 @@ import { useAppDispatch, useAppSelector } from "@/store/hooks";
 import { setValues } from "@/store/slices/roleSlice";
 import { getUserOrganizationRole } from "@/services/OrganizationService";
 import { getUserTenantRole } from "@/services/TenantService";
+import { useNavigate } from "react-router-dom";
 
 export interface BreadcrumbItem {
   label: string;
@@ -39,7 +40,7 @@ const Breadcrumb = ({ items, className }: BreadcrumbProps) => {
               {isLast ? (
                 // Active/Last item - tidak bisa diklik
                 <span
-                  className="flex items-center gap-1.5 text-sm font-semibold text-neutral-900 truncate max-w-[160px]"
+                  className="flex items-center gap-1.5 text-sm font-semibold text-neutral-900 truncate"
                   aria-current="page"
                 >
                   {Icon && (
@@ -85,8 +86,26 @@ const BreadcrumbNav = () => {
     activeTenantName,
   } = useAppSelector((state) => state.role);
   const dispatch = useAppDispatch();
+  const navigate = useNavigate();
 
   const items: BreadcrumbItem[] = [
+    {
+      label: "Index",
+      icon: Home,
+      onClick: async () => {
+        dispatch(
+          setValues({
+            activeOrganizationId: null,
+            activeOrganizationName: null,
+            activeTenantId: null,
+            activeTenantName: null,
+            activeRole: null,
+          })
+        );
+
+        navigate("/home");
+      },
+    },
     ...(activeOrganizationName
       ? [
           {
@@ -101,6 +120,8 @@ const BreadcrumbNav = () => {
                   activeRole: role.data,
                 })
               );
+
+              navigate("/home");
             },
           },
         ]
