@@ -1,4 +1,3 @@
-// src/pages/AuthPage.tsx
 import { useState } from "react";
 import {
   Eye,

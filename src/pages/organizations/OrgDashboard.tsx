@@ -9,7 +9,7 @@ const OrgDashboard = () => {
 
   return (
     <Layout currentPage={currentPage} onNavigate={setCurrentPage}>
-      <div className="min-h-screen bg-surface-secondary font-sans">Hellow</div>
+      hellow
     </Layout>
   );
 };

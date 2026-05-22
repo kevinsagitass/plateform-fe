@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { Store, Search, Plus, ArrowRight, Loader2 } from "lucide-react";
+import { Store, Search, ArrowRight, Loader2 } from "lucide-react";
 import TenantCard from "@/components/tenants/TenantCard";
 import { useAppDispatch, useAppSelector } from "@/store/hooks";
 import { setValues } from "@/store/slices/roleSlice";
@@ -86,19 +86,19 @@ const TenantHome = () => {
   };
 
   return (
-    <main className="pt-16 min-h-screen">
+    <main className="min-h-screen">
       <div className="p-4 sm:p-6 lg:p-8 max-w-4xl mx-auto">
         {/* Page Header */}
         <div className="mb-8 animate-fade-in">
           <div className="flex items-center gap-3 mb-2">
-            <div className="w-10 h-10 rounded-xl bg-gradient-warm flex items-center justify-center shadow-order">
+            <div className="w-10 h-10 rounded-xl bg-gradient-warm flex items-center justify-center shadow-order shrink-0">
               <Store size={20} className="text-white" />
             </div>
             <div>
-              <h1 className="font-display font-bold text-2xl text-neutral-900">
+              <h1 className="font-display font-bold text-2xl text-neutral-900 dark:text-neutral-100">
                 Select Tenant
               </h1>
-              <p className="text-sm text-neutral-500">
+              <p className="text-sm text-neutral-500 dark:text-neutral-400">
                 Choose your tenant to continue
               </p>
             </div>
@@ -110,7 +110,7 @@ const TenantHome = () => {
           <div className="relative flex-1">
             <Search
               size={16}
-              className="absolute left-3.5 top-1/2 -translate-y-1/2 text-neutral-400"
+              className="absolute left-3.5 top-1/2 -translate-y-1/2 text-neutral-400 dark:text-neutral-500"
             />
             <input
               type="text"
@@ -118,38 +118,29 @@ const TenantHome = () => {
               onChange={(e) => setSearch(e.target.value)}
               placeholder="Search tenant..."
               className="
-                w-full pl-10 pr-4 py-2.5 text-sm
-                bg-surface border border-neutral-200 rounded-xl
-                text-neutral-900 placeholder:text-neutral-400
-                focus:outline-none focus:ring-2 focus:ring-primary-300 focus:border-primary-400
+                w-full pl-10 pr-4 py-2.5 text-sm rounded-xl
+                bg-white dark:bg-neutral-800
+                border border-neutral-200 dark:border-neutral-700
+                text-neutral-900 dark:text-neutral-100
+                placeholder:text-neutral-400 dark:placeholder:text-neutral-500
+                focus:outline-none focus:ring-2 focus:ring-primary-300 dark:focus:ring-primary-500/40
+                focus:border-primary-400 dark:focus:border-primary-500
                 transition-all duration-200
               "
             />
           </div>
-
-          <button
-            className="
-            flex items-center gap-2 px-4 py-2.5 text-sm font-medium
-            bg-gradient-warm text-white rounded-xl shadow-order
-            hover:shadow-lg hover:-translate-y-0.5
-            transition-all duration-200 flex-shrink-0
-          "
-          >
-            <Plus size={16} />
-            <span className="hidden sm:block">Add New</span>
-          </button>
         </div>
 
         {/* Stats */}
         <div className="flex items-center gap-4 mb-4">
-          <p className="text-sm text-neutral-500">
-            <span className="font-semibold text-neutral-900">
+          <p className="text-sm text-neutral-500 dark:text-neutral-400">
+            <span className="font-semibold text-neutral-900 dark:text-neutral-100">
               {filtered.length}
             </span>{" "}
             tenant found
           </p>
           {selectedTenant && (
-            <div className="flex items-center gap-1.5 text-sm text-primary-600 animate-fade-in">
+            <div className="flex items-center gap-1.5 text-sm text-primary-600 dark:text-primary-400 animate-fade-in">
               <div className="w-1.5 h-1.5 rounded-full bg-primary-500" />
               <span className="font-medium">
                 {selectedTenant.tenantName}
@@ -179,19 +170,22 @@ const TenantHome = () => {
         ) : (
           /* Empty State */
           <div className="flex flex-col items-center justify-center py-16 animate-fade-in">
-            <div className="w-16 h-16 rounded-2xl bg-neutral-100 flex items-center justify-center mb-4">
-              <Store size={28} className="text-neutral-300" />
+            <div className="w-16 h-16 rounded-2xl bg-neutral-100 dark:bg-neutral-800 flex items-center justify-center mb-4">
+              <Store
+                size={28}
+                className="text-neutral-300 dark:text-neutral-600"
+              />
             </div>
-            <p className="font-semibold text-neutral-700 mb-1">
+            <p className="font-semibold text-neutral-700 dark:text-neutral-300 mb-1">
               No tenant found
             </p>
-            <p className="text-sm text-neutral-400">
+            <p className="text-sm text-neutral-400 dark:text-neutral-500">
               Try different search keywords
             </p>
           </div>
         )}
 
-        {/* Continue Button */}
+        {/* Continue Button — sticky bottom */}
         <div
           className={`
             sticky bottom-4 transition-all duration-300
@@ -202,15 +196,24 @@ const TenantHome = () => {
             }
           `}
         >
-          <div className="bg-surface rounded-2xl shadow-modal border border-neutral-200 p-4 flex items-center justify-between gap-4">
+          <div
+            className="
+            bg-white dark:bg-neutral-900
+            rounded-2xl shadow-modal
+            border border-neutral-200 dark:border-neutral-700
+            p-4 flex items-center justify-between gap-4
+          "
+          >
             {/* Selected Info */}
             <div className="flex items-center gap-3 min-w-0">
-              <div className="w-9 h-9 rounded-lg bg-gradient-warm flex items-center justify-center flex-shrink-0">
+              <div className="w-9 h-9 rounded-lg bg-gradient-warm flex items-center justify-center shrink-0">
                 <Store size={16} className="text-white" />
               </div>
               <div className="min-w-0">
-                <p className="text-xs text-neutral-500">Selected</p>
-                <p className="text-sm font-semibold text-neutral-900 truncate">
+                <p className="text-xs text-neutral-500 dark:text-neutral-400">
+                  Selected
+                </p>
+                <p className="text-sm font-semibold text-neutral-900 dark:text-neutral-100 truncate">
                   {selectedTenant?.tenantName}
                 </p>
               </div>

@@ -17,7 +17,7 @@ export const Layout: React.FC<LayoutProps> = ({
   const [sidebarOpen, setSidebarOpen] = useState(false);
 
   return (
-    <div className="flex h-screen bg-surface-secondary overflow-hidden font-sans">
+    <div className="flex h-screen bg-neutral-50 dark:bg-neutral-950 overflow-hidden font-sans transition-colors duration-200">
       <Sidebar
         currentPage={currentPage}
         onNavigate={onNavigate}
@@ -31,7 +31,7 @@ export const Layout: React.FC<LayoutProps> = ({
         />
         <main className="flex-1 overflow-y-auto p-4 lg:p-6">
           <div className="animate-fade-in">
-            <div className="text-xs text-neutral-400 md:hidden truncate">
+            <div className="text-xs text-neutral-400 dark:text-neutral-500 md:hidden truncate mb-2">
               <CollapsedBreadcrumb />
             </div>
             {children}

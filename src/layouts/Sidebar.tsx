@@ -1,4 +1,3 @@
-import React from "react";
 import { useAuth } from "@/hooks/useAuth";
 import { menus, resolvePath } from "@/config/menu";
 import { useAppSelector } from "@/store/hooks";
@@ -31,20 +30,13 @@ export const Sidebar: React.FC<SidebarProps> = ({
 }) => {
   const { logout, user } = useAuth();
   const { activeOrganizationId, activeTenantId } = useAppSelector(
-    (state) => state.role
+    (s) => s.role
   );
-  const activeRole = useAppSelector((state) => state.role?.activeRole);
+  const activeRole = useAppSelector((s) => s.role?.activeRole);
   const context = activeTenantId ? "tenant" : "organization";
   const navItems = activeRole
     ? menus[activeRole][context]
-    : [
-        {
-          key: "home",
-          label: "Home",
-          path: "/home",
-          icon: HomeIcon,
-        },
-      ];
+    : [{ key: "home", label: "Home", path: "/home", icon: HomeIcon }];
 
   const params = {
     orgId: activeOrganizationId ?? null,
@@ -66,23 +58,28 @@ export const Sidebar: React.FC<SidebarProps> = ({
       {/* Sidebar */}
       <aside
         className={[
-          "fixed top-0 left-0 h-full w-64 bg-surface border-r border-neutral-100 z-50",
-          "flex flex-col transition-transform duration-300 ease-out",
+          // base
+          "fixed top-0 left-0 h-full w-64 z-50",
+          "flex flex-col transition-all duration-300 ease-out",
+          // colors
+          "bg-white dark:bg-neutral-900",
+          "border-r border-neutral-100 dark:border-neutral-800",
+          // responsive
           "lg:translate-x-0 lg:static lg:z-auto",
           isOpen ? "translate-x-0" : "-translate-x-full",
         ].join(" ")}
       >
         {/* Logo */}
-        <div className="p-5 border-b border-neutral-100">
+        <div className="p-5 border-b border-neutral-100 dark:border-neutral-800">
           <div className="flex items-center gap-3">
-            <div className="w-9 h-9 rounded-xl bg-gradient-warm flex items-center justify-center shadow-order">
+            <div className="w-9 h-9 rounded-xl bg-gradient-warm flex items-center justify-center shadow-order shrink-0">
               <ChefHat className="text-white" size={16} />
             </div>
             <div>
-              <p className="font-display font-bold text-neutral-900 text-base leading-tight">
+              <p className="font-display font-bold text-neutral-900 dark:text-neutral-100 text-base leading-tight">
                 Plateform
               </p>
-              <p className="text-2xs text-neutral-400 font-medium">
+              <p className="text-2xs text-neutral-400 dark:text-neutral-500 font-medium">
                 Restaurant Suite
               </p>
             </div>
@@ -94,7 +91,8 @@ export const Sidebar: React.FC<SidebarProps> = ({
           <nav className="flex-1 p-3 overflow-y-auto">
             <ul className="space-y-0.5">
               {navItems.map((item) => {
-                const Icon = item.icon; // ← ⚠️ harus capitalize
+                const Icon = item.icon;
+                const isActive = currentPage === item.key;
 
                 return (
                   <li key={item.key}>
@@ -106,30 +104,26 @@ export const Sidebar: React.FC<SidebarProps> = ({
                       }}
                       className={[
                         "w-full flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium transition-all duration-150",
-                        currentPage === item.key
-                          ? "bg-primary-50 text-primary-700"
-                          : "text-neutral-600 hover:bg-neutral-50 hover:text-neutral-900",
+                        isActive
+                          ? "bg-primary-50 dark:bg-primary-950/40 text-primary-700 dark:text-primary-400"
+                          : "text-neutral-600 dark:text-neutral-400 hover:bg-neutral-50 dark:hover:bg-neutral-800 hover:text-neutral-900 dark:hover:text-neutral-100",
                       ].join(" ")}
                     >
-                      {/* ✅ Fix disini */}
                       <Icon
                         size={18}
                         className={
-                          currentPage === item.key
-                            ? "text-primary-600"
-                            : "text-neutral-400"
+                          isActive
+                            ? "text-primary-600 dark:text-primary-400"
+                            : "text-neutral-400 dark:text-neutral-500"
                         }
                       />
-
                       <span className="flex-1 text-left">{item.label}</span>
-
                       {item.badge && (
                         <span className="w-5 h-5 rounded-full bg-primary-500 text-white text-2xs font-bold flex items-center justify-center">
                           {item.badge}
                         </span>
                       )}
-
-                      {currentPage === item.key && (
+                      {isActive && (
                         <span className="w-1.5 h-1.5 rounded-full bg-primary-500" />
                       )}
                     </button>
@@ -141,27 +135,25 @@ export const Sidebar: React.FC<SidebarProps> = ({
         )}
 
         {/* User Profile */}
-        <div className="mt-auto shrink-0 border-t border-neutral-100 p-3">
-          <div className="rounded-2xl border border-neutral-100 bg-neutral-50/70 p-3">
+        <div className="mt-auto shrink-0 border-t border-neutral-100 dark:border-neutral-800 p-3">
+          <div className="rounded-2xl border border-neutral-100 dark:border-neutral-700 bg-neutral-50/70 dark:bg-neutral-800/50 p-3">
             <div className="flex items-center gap-3">
               <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-gradient-warm text-sm font-bold text-white">
                 {user?.name?.charAt(0)?.toUpperCase() || "A"}
               </div>
-
               <div className="min-w-0 flex-1">
-                <p className="truncate text-sm font-semibold text-neutral-900">
+                <p className="truncate text-sm font-semibold text-neutral-900 dark:text-neutral-100">
                   {user?.name || "Admin User"}
                 </p>
-
-                <p className="truncate text-xs text-neutral-400">
-                  {user?.email || "admin@plateform.com"}
+                <p className="truncate text-xs text-neutral-400 dark:text-neutral-500">
+                  {user?.email || "[Email]"}
                 </p>
               </div>
             </div>
 
             <button
               onClick={logout}
-              className="mt-3 flex w-full items-center justify-center gap-2 rounded-xl border border-red-100 bg-white px-3 py-2.5 text-sm font-medium text-red-500 transition-all duration-200 hover:bg-red-50 hover:text-red-600"
+              className="mt-3 flex w-full items-center justify-center gap-2 rounded-xl border border-red-100 dark:border-red-900/40 bg-white dark:bg-neutral-800 px-3 py-2.5 text-sm font-medium text-red-500 dark:text-red-400 transition-all duration-200 hover:bg-red-50 dark:hover:bg-red-950/30 hover:text-red-600"
             >
               <svg
                 className="h-4 w-4"

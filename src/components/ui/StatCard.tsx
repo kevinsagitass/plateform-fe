@@ -1,5 +1,3 @@
-import React from "react";
-
 interface StatCardProps {
   title: string;
   value: string | number;
@@ -18,21 +16,21 @@ export const StatCard: React.FC<StatCardProps> = ({
   change,
   changeLabel = "vs last week",
   icon,
-  iconBg = "bg-primary-50",
-  iconColor = "text-primary-600",
+  iconBg = "bg-primary-50 dark:bg-primary-950/40",
+  iconColor = "text-primary-600 dark:text-primary-400",
   prefix = "",
   suffix = "",
 }) => {
   const isPositive = change !== undefined && change >= 0;
 
   return (
-    <div className="bg-surface rounded-xl border border-neutral-100 shadow-card p-5 hover:shadow-card-hover transition-all duration-200">
+    <div className="bg-white dark:bg-neutral-900 rounded-xl border border-neutral-100 dark:border-neutral-800 shadow-card p-5 hover:shadow-card-hover transition-all duration-200">
       <div className="flex items-start justify-between">
         <div className="flex-1">
-          <p className="text-xs font-medium text-neutral-500 uppercase tracking-wide">
+          <p className="text-xs font-medium text-neutral-500 dark:text-neutral-400 uppercase tracking-wide">
             {title}
           </p>
-          <p className="mt-2 text-3xl font-display font-bold text-neutral-900">
+          <p className="mt-2 text-3xl font-display font-bold text-neutral-900 dark:text-neutral-100">
             {prefix}
             {value}
             {suffix}
@@ -42,7 +40,9 @@ export const StatCard: React.FC<StatCardProps> = ({
               <span
                 className={[
                   "inline-flex items-center gap-0.5 text-xs font-medium",
-                  isPositive ? "text-success-dark" : "text-error-dark",
+                  isPositive
+                    ? "text-success-dark dark:text-success"
+                    : "text-error-dark dark:text-red-400",
                 ].join(" ")}
               >
                 {isPositive ? (
@@ -76,10 +76,13 @@ export const StatCard: React.FC<StatCardProps> = ({
                 )}
                 {Math.abs(change)}%
               </span>
-              <span className="text-xs text-neutral-400">{changeLabel}</span>
+              <span className="text-xs text-neutral-400 dark:text-neutral-500">
+                {changeLabel}
+              </span>
             </div>
           )}
         </div>
+
         <div
           className={[
             "w-12 h-12 rounded-xl flex items-center justify-center",

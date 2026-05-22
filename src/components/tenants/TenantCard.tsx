@@ -16,8 +16,15 @@ const TenantCard = ({ tenant, isSelected, onClick }: TenantCardProps) => {
         "w-full text-left p-5 rounded-xl border-2 transition-all duration-200 group",
         "hover:shadow-card-hover hover:-translate-y-0.5",
         isSelected
-          ? "border-primary-400 bg-primary-50 shadow-order"
-          : "border-neutral-200 bg-surface hover:border-primary-200"
+          ? [
+              "border-primary-400 shadow-order",
+              "bg-primary-50 dark:bg-primary-950/30",
+            ]
+          : [
+              "border-neutral-200 dark:border-neutral-700",
+              "bg-white dark:bg-neutral-800/60",
+              "hover:border-primary-200 dark:hover:border-primary-700",
+            ]
       )}
     >
       <div className="flex items-start justify-between gap-3">
@@ -29,41 +36,37 @@ const TenantCard = ({ tenant, isSelected, onClick }: TenantCardProps) => {
               "w-11 h-11 rounded-xl flex items-center justify-center flex-shrink-0 transition-colors",
               isSelected
                 ? "bg-gradient-warm shadow-order"
-                : "bg-neutral-100 group-hover:bg-primary-100"
+                : "bg-neutral-100 dark:bg-neutral-700 group-hover:bg-primary-100 dark:group-hover:bg-primary-900/40"
             )}
           >
             <Store
               size={20}
-              className={
+              className={cn(
                 isSelected
                   ? "text-white"
-                  : "text-neutral-500 group-hover:text-primary-500"
-              }
+                  : "text-neutral-500 dark:text-neutral-400 group-hover:text-primary-500"
+              )}
             />
           </div>
 
           {/* Text */}
           <div className="flex-1 min-w-0">
             <div className="flex items-center gap-2 flex-wrap">
-              <h3 className="font-display font-semibold text-base text-neutral-900 truncate">
+              <h3 className="font-display font-semibold text-base text-neutral-900 dark:text-neutral-100 truncate">
                 {tenant.tenantName}
               </h3>
               {tenant.isActive ? (
-                <span className="px-2 py-0.5 text-2xs font-semibold bg-success-light text-success-dark rounded-full flex-shrink-0">
+                <span className="px-2 py-0.5 text-2xs font-semibold bg-success-light dark:bg-success-dark/20 text-success-dark dark:text-success rounded-full flex-shrink-0">
                   Active
                 </span>
               ) : (
-                <span className="px-2 py-0.5 text-2xs font-semibold bg-neutral-100 text-neutral-500 rounded-full flex-shrink-0">
+                <span className="px-2 py-0.5 text-2xs font-semibold bg-neutral-100 dark:bg-neutral-700 text-neutral-500 dark:text-neutral-400 rounded-full flex-shrink-0">
                   Inactive
                 </span>
               )}
             </div>
 
-            <p className="text-xs text-neutral-500 mt-0.5">
-              {/* Type : {tenant.type} */}
-            </p>
-
-            <p className="text-xs text-neutral-500 mt-0.5">
+            <p className="text-xs text-neutral-500 dark:text-neutral-400 mt-0.5">
               Address : {tenant.tenantLocation}
             </p>
           </div>
@@ -76,7 +79,7 @@ const TenantCard = ({ tenant, isSelected, onClick }: TenantCardProps) => {
           ) : (
             <ChevronRight
               size={18}
-              className="text-neutral-300 group-hover:text-primary-400 transition-colors"
+              className="text-neutral-300 dark:text-neutral-600 group-hover:text-primary-400 transition-colors"
             />
           )}
         </div>

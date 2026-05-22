@@ -11,9 +11,7 @@ const HomePage = () => {
 
   return (
     <Layout currentPage={currentPage} onNavigate={setCurrentPage}>
-      <div className="min-h-screen bg-surface-secondary font-sans">
-        {activeOrganizationId != null ? <TenantHome /> : <OrganizationHome />}
-      </div>
+      {activeOrganizationId != null ? <TenantHome /> : <OrganizationHome />}
     </Layout>
   );
 };

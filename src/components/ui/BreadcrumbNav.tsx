@@ -32,21 +32,21 @@ const Breadcrumb = ({ items, className }: BreadcrumbProps) => {
               {index > 0 && (
                 <ChevronRight
                   size={14}
-                  className="text-neutral-300 flex-shrink-0"
+                  className="text-neutral-300 dark:text-neutral-600 flex-shrink-0"
                 />
               )}
 
               {/* Item */}
               {isLast ? (
-                // Active/Last item - tidak bisa diklik
+                // Active/Last item
                 <span
-                  className="flex items-center gap-1.5 text-sm font-semibold text-neutral-900 truncate"
+                  className="flex items-center gap-1.5 text-xs font-semibold text-neutral-700 dark:text-neutral-200 truncate"
                   aria-current="page"
                 >
                   {Icon && (
                     <Icon
-                      size={14}
-                      className="text-neutral-500 flex-shrink-0"
+                      size={13}
+                      className="text-neutral-500 dark:text-neutral-400 flex-shrink-0"
                     />
                   )}
                   {item.label}
@@ -55,18 +55,18 @@ const Breadcrumb = ({ items, className }: BreadcrumbProps) => {
                 // Link item
                 <a
                   href={item.href}
-                  className="flex items-center gap-1.5 text-sm text-neutral-400 hover:text-primary-500 transition-colors duration-150 truncate max-w-[160px]"
+                  className="flex items-center gap-1.5 text-xs text-neutral-400 dark:text-neutral-500 hover:text-primary-500 dark:hover:text-primary-400 transition-colors duration-150 truncate max-w-[160px]"
                 >
-                  {Icon && <Icon size={14} className="flex-shrink-0" />}
+                  {Icon && <Icon size={13} className="flex-shrink-0" />}
                   {item.label}
                 </a>
               ) : (
                 // Button item
                 <button
                   onClick={item.onClick}
-                  className="flex items-center gap-1.5 text-sm text-neutral-400 hover:text-primary-500 transition-colors duration-150 truncate max-w-[160px]"
+                  className="flex items-center gap-1.5 text-xs text-neutral-400 dark:text-neutral-500 hover:text-primary-500 dark:hover:text-primary-400 transition-colors duration-150 truncate max-w-[160px]"
                 >
-                  {Icon && <Icon size={14} className="flex-shrink-0" />}
+                  {Icon && <Icon size={13} className="flex-shrink-0" />}
                   {item.label}
                 </button>
               )}
@@ -102,7 +102,6 @@ const BreadcrumbNav = () => {
             activeRole: null,
           })
         );
-
         navigate("/home");
       },
     },
@@ -120,7 +119,6 @@ const BreadcrumbNav = () => {
                   activeRole: role.data,
                 })
               );
-
               navigate("/home");
             },
           },
@@ -133,11 +131,7 @@ const BreadcrumbNav = () => {
             icon: Store,
             onClick: async () => {
               const role = await getUserTenantRole(activeTenantId);
-              dispatch(
-                setValues({
-                  activeRole: role.data,
-                })
-              );
+              dispatch(setValues({ activeRole: role.data }));
             },
           },
         ]

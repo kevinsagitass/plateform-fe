@@ -1,6 +1,4 @@
-import React from "react";
-
-export const Avatar: React = ({
+export const Avatar = ({
   name,
   size = "md",
 }: {
