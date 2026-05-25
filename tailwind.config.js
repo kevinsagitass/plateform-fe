@@ -11,9 +11,15 @@ export default {
   theme: {
     extend: {
       borderRadius: {
-        lg: "var(--radius)",
-        md: "calc(var(--radius) - 2px)",
-        sm: "calc(var(--radius) - 4px)",
+        none: "0",
+        sm: "0.25rem",
+        DEFAULT: "0.5rem",
+        md: "0.625rem",
+        lg: "0.75rem",
+        xl: "1rem",
+        "2xl": "1.25rem",
+        "3xl": "1.5rem",
+        full: "9999px",
       },
       colors: {
         primary: {
@@ -134,17 +140,6 @@ export default {
         "3xl": ["1.875rem", { lineHeight: "2.25rem" }],
         "4xl": ["2.25rem", { lineHeight: "2.5rem" }],
         "5xl": ["3rem", { lineHeight: "1.15" }],
-      },
-      borderRadius: {
-        none: "0",
-        sm: "0.25rem",
-        DEFAULT: "0.5rem",
-        md: "0.625rem",
-        lg: "0.75rem",
-        xl: "1rem",
-        "2xl": "1.25rem",
-        "3xl": "1.5rem",
-        full: "9999px",
       },
       boxShadow: {
         card: "0 1px 3px rgba(0,0,0,0.06), 0 1px 2px rgba(0,0,0,0.04)",

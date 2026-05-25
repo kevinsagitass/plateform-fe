@@ -28,6 +28,7 @@ import {
   inviteOrganizationMember,
   removeOrganizationUser,
 } from "@/services/RoleService";
+import { useAuth } from "@/hooks/useAuth";
 
 const ROLE_STYLES: Record<OrganizationRole, string> = {
   OWNER:
@@ -156,7 +157,7 @@ const InviteModal = ({
       } else {
         toast.error("Failed to create organization");
       }
-      // Re-throw so the modal stays open on error
+
       throw error;
     } finally {
       setIsSubmitting(false);
@@ -477,6 +478,8 @@ const RowActionMenu = ({
   const menuWidth = 176;
   const left = anchorRect.right - menuWidth;
   const top = anchorRect.bottom + 6;
+  const { activeOrganizationId } = useAppSelector((state) => state.role);
+  const { user: currentUser } = useAuth();
 
   return createPortal(
     <motion.div
@@ -488,16 +491,22 @@ const RowActionMenu = ({
       className="bg-white dark:bg-neutral-900 rounded-xl shadow-menu border border-neutral-200 dark:border-neutral-700 z-[9999] overflow-hidden"
     >
       <div className="p-1.5 space-y-0.5">
-        <button
-          onClick={() => {
-            onEditRole();
-            onClose();
-          }}
-          className="w-full flex items-center gap-2.5 px-3 py-2 rounded-lg text-sm text-neutral-700 dark:text-neutral-300 hover:bg-neutral-50 dark:hover:bg-neutral-800 transition-colors text-left"
-        >
-          <Shield className="w-3.5 h-3.5 text-neutral-400 dark:text-neutral-500" />
-          Edit Role
-        </button>
+        {currentUser.organizationRoles.some(
+          (role) =>
+            role.organizationId === activeOrganizationId &&
+            role.role === "OWNER"
+        ) && (
+          <button
+            onClick={() => {
+              onEditRole();
+              onClose();
+            }}
+            className="w-full flex items-center gap-2.5 px-3 py-2 rounded-lg text-sm text-neutral-700 dark:text-neutral-300 hover:bg-neutral-50 dark:hover:bg-neutral-800 transition-colors text-left"
+          >
+            <Shield className="w-3.5 h-3.5 text-neutral-400 dark:text-neutral-500" />
+            Edit Role
+          </button>
+        )}
         {user.role !== "OWNER" && (
           <>
             <div className="h-px bg-neutral-100 dark:bg-neutral-800 mx-1" />
@@ -567,15 +576,7 @@ const OrgUsers = () => {
     setRemoveTarget(null);
   };
 
-  const handleInvite = (email: string, role: OrganizationRole) => {
-    const newUser: OrgUserRole = {
-      userId: Math.random().toString(36).slice(2),
-      organizationId: activeOrganizationId,
-      name: email.split("@")[0],
-      email,
-      role,
-      joinedAt: new Date().toISOString().split("T")[0],
-    };
+  const handleInvite = () => {
     setInviteOpen(false);
   };
 

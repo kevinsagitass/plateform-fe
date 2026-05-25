@@ -22,35 +22,58 @@ import {
   DropdownMenuCheckboxItem,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
-import { getUserTenants } from "@/services/TenantService";
+import {
+  createTenant,
+  getUserTenants,
+  patchTenant,
+} from "@/services/TenantService";
+import { TenantWorkHour } from "@/types/tenant";
+import { useAuth } from "@/hooks/useAuth";
 
-const createTenant = async (data: {
+const addTenant = async (data: {
   organizationId: string;
   tenantName: string;
   tenantLocation: string;
+  workHours: TenantWorkHour[];
 }) => {
-  const res = await fetch(`/api/organizations/${data.organizationId}/tenants`, {
-    method: "POST",
-    headers: { "Content-Type": "application/json" },
-    body: JSON.stringify(data),
-  });
-  if (!res.ok) throw new Error("Failed to create tenant");
-  return res.json();
+  try {
+    await createTenant({
+      organizationId: data.organizationId,
+      tenantName: data.tenantName,
+      location: data.tenantLocation,
+      tenantWorkHours: data.workHours,
+    });
+  } catch (error) {
+    if (error instanceof Error) {
+      toast.error(error.message);
+    } else if (typeof error === "string") {
+      toast.error(error);
+    } else {
+      toast.error("Failed to create organization");
+    }
+    throw error;
+  }
 };
 
-const updateTenant = async (data: {
-  id: string;
-  tenantName: string;
-  tenantLocation: string;
-  isActive: boolean;
+export const updateTenant = async (data: {
+  tenantId: string;
+  tenantName?: string;
+  location?: string;
+  tenantWorkHours?: TenantWorkHour[];
+  isActive?: boolean;
 }) => {
-  const res = await fetch(`/api/tenants/${data.id}`, {
-    method: "PUT",
-    headers: { "Content-Type": "application/json" },
-    body: JSON.stringify(data),
-  });
-  if (!res.ok) throw new Error("Failed to update tenant");
-  return res.json();
+  try {
+    await patchTenant(data);
+  } catch (error) {
+    if (error instanceof Error) {
+      toast.error(error.message);
+    } else if (typeof error === "string") {
+      toast.error(error);
+    } else {
+      toast.error("Failed to create organization");
+    }
+    throw error;
+  }
 };
 
 const deleteTenant = async (id: string) => {
@@ -62,6 +85,7 @@ type FilterStatus = "all" | "active" | "inactive";
 
 const Tenants = () => {
   const { activeOrganizationId } = useAppSelector((state) => state.role);
+  const { user, subscriptionConfig } = useAuth();
   const [currentPage, setCurrentPage] = useState<PageKey>("tenants");
   const queryClient = useQueryClient();
 
@@ -85,7 +109,7 @@ const Tenants = () => {
     });
 
   const createMutation = useMutation({
-    mutationFn: createTenant,
+    mutationFn: addTenant,
     onSuccess: () => {
       toast.success("Tenant created successfully");
       invalidate();
@@ -114,6 +138,7 @@ const Tenants = () => {
   const handleCreate = async (values: {
     tenantName: string;
     tenantLocation: string;
+    workHours: TenantWorkHour[];
   }) => {
     await createMutation.mutateAsync({
       organizationId: activeOrganizationId,
@@ -124,12 +149,15 @@ const Tenants = () => {
   const handleEdit = async (values: {
     tenantName: string;
     tenantLocation: string;
+    workHours: TenantWorkHour[];
   }) => {
     if (!editTarget) return;
+
     await updateMutation.mutateAsync({
-      id: editTarget.id,
-      isActive: editTarget.isActive,
-      ...values,
+      tenantId: editTarget.tenantId,
+      tenantName: values.tenantName,
+      location: values.tenantLocation,
+      tenantWorkHours: values.workHours,
     });
   };
 
@@ -140,9 +168,7 @@ const Tenants = () => {
 
   const handleToggleActive = async (tenant: any) => {
     await updateMutation.mutateAsync({
-      id: tenant.id,
-      tenantName: tenant.tenantName,
-      tenantLocation: tenant.tenantLocation,
+      tenantId: tenant.tenantId,
       isActive: !tenant.isActive,
     });
     toast.success(
@@ -216,13 +242,16 @@ const Tenants = () => {
               </div>
             </div>
 
-            <button
-              onClick={() => setCreateOpen(true)}
-              className="flex items-center gap-2 px-4 py-2.5 text-sm font-semibold bg-gradient-warm text-white rounded-xl shadow-order hover:shadow-lg hover:-translate-y-0.5 transition-all duration-200"
-            >
-              <Plus size={16} />
-              <span>Add Tenant</span>
-            </button>
+            {user.subscription.plan !== "FREE" &&
+              tenantsData.length < subscriptionConfig.maxTenant && (
+                <button
+                  onClick={() => setCreateOpen(true)}
+                  className="flex items-center gap-2 px-4 py-2.5 text-sm font-semibold bg-gradient-warm text-white rounded-xl shadow-order hover:shadow-lg hover:-translate-y-0.5 transition-all duration-200"
+                >
+                  <Plus size={16} />
+                  <span>Add Tenant</span>
+                </button>
+              )}
           </div>
         </motion.div>
 
@@ -383,15 +412,18 @@ const Tenants = () => {
                 ? "Try different keywords or filters"
                 : "Add your first store location to get started"}
             </p>
-            {!search && filterStatus === "all" && (
-              <button
-                onClick={() => setCreateOpen(true)}
-                className="flex items-center gap-2 px-4 py-2.5 text-sm font-semibold bg-gradient-warm text-white rounded-xl shadow-order hover:shadow-lg hover:-translate-y-0.5 transition-all duration-200"
-              >
-                <Plus size={16} />
-                Add Tenant
-              </button>
-            )}
+            {!search &&
+              filterStatus === "all" &&
+              user.subscription.plan !== "FREE" &&
+              tenantsData.length < subscriptionConfig.maxTenant && (
+                <button
+                  onClick={() => setCreateOpen(true)}
+                  className="flex items-center gap-2 px-4 py-2.5 text-sm font-semibold bg-gradient-warm text-white rounded-xl shadow-order hover:shadow-lg hover:-translate-y-0.5 transition-all duration-200"
+                >
+                  <Plus size={16} />
+                  Add Tenant
+                </button>
+              )}
           </motion.div>
         )}
       </div>
@@ -411,6 +443,15 @@ const Tenants = () => {
             ? {
                 tenantName: editTarget.tenantName,
                 tenantLocation: editTarget.tenantLocation,
+                workHours: (editTarget.tenantWorkHours ?? []).map(
+                  (wh: TenantWorkHour) => ({
+                    tenantWorkHourId: wh.tenantWorkHourId,
+                    dayOfMonth: wh.dayOfMonth,
+                    openHour: wh.openHour?.slice(0, 5) ?? "08:00",
+                    closeHour: wh.closeHour?.slice(0, 5) ?? "22:00",
+                    isActive: wh.isActive ?? false,
+                  })
+                ),
               }
             : undefined
         }

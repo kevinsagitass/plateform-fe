@@ -60,27 +60,6 @@ export const Header: React.FC<HeaderProps> = ({
 
       {/* Right actions */}
       <div className="flex items-center gap-2">
-        {/* Search */}
-        <button className="hidden md:flex items-center gap-2 px-3 py-2 rounded-lg bg-neutral-50 dark:bg-neutral-800 border border-neutral-200 dark:border-neutral-700 text-neutral-400 dark:text-neutral-500 text-sm hover:border-neutral-300 dark:hover:border-neutral-600 transition-colors w-48">
-          <svg
-            className="w-4 h-4 shrink-0"
-            fill="none"
-            viewBox="0 0 24 24"
-            stroke="currentColor"
-          >
-            <path
-              strokeLinecap="round"
-              strokeLinejoin="round"
-              strokeWidth={2}
-              d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"
-            />
-          </svg>
-          <span className="text-xs">Search...</span>
-          <span className="ml-auto text-2xs bg-neutral-200 dark:bg-neutral-700 text-neutral-500 dark:text-neutral-400 px-1.5 py-0.5 rounded font-mono">
-            ⌘K
-          </span>
-        </button>
-
         {/* Notifications */}
         <button className="relative w-9 h-9 rounded-lg flex items-center justify-center text-neutral-500 dark:text-neutral-400 hover:bg-neutral-100 dark:hover:bg-neutral-800 transition-colors">
           <svg

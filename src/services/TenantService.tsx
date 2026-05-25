@@ -1,6 +1,6 @@
 import { ApiResponse } from "@/types";
 import api from "../config/api";
-import { TenantUsers } from "@/types/tenant";
+import { Tenant, TenantUsers } from "@/types/tenant";
 
 export const getUserTenants = async (
   organizationId: string
@@ -17,6 +17,21 @@ export const getUserTenantRole = async (
 ): Promise<ApiResponse<string>> => {
   const result = await api.get<ApiResponse<string>>(
     `/tenants/${tenantId}/role`
+  );
+
+  return result.data;
+};
+
+export const createTenant = async (data: Tenant): Promise<ApiResponse<any>> => {
+  const result = await api.post<ApiResponse<any>>(`/tenants`);
+
+  return result.data;
+};
+
+export const patchTenant = async (data: Tenant): Promise<ApiResponse<any>> => {
+  const result = await api.patch<ApiResponse<any>>(
+    `/tenants/${data.tenantId}`,
+    data
   );
 
   return result.data;

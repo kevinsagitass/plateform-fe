@@ -15,7 +15,6 @@ import {
   TrendingUp,
   CheckCircle2,
 } from "lucide-react";
-import React from "react";
 import { Link } from "react-router-dom";
 import { useAuth } from "@/hooks/useAuth";
 
@@ -664,17 +663,17 @@ export default function AuthPage() {
         <div className="px-6 py-4 text-center border-t border-neutral-100">
           <p className="text-xs text-neutral-400">
             © 2026 Plateform ·
-            <button className="hover:text-neutral-600 transition-colors mx-1">
-              Privacy
-            </button>
+            <Link to="/privacy">
+              <button className="hover:text-neutral-600 transition-colors mx-1">
+                Privacy
+              </button>
+            </Link>
             ·
-            <button className="hover:text-neutral-600 transition-colors mx-1">
-              Terms
-            </button>
-            ·
-            <button className="hover:text-neutral-600 transition-colors mx-1">
-              Support
-            </button>
+            <Link to="/terms">
+              <button className="hover:text-neutral-600 transition-colors mx-1">
+                Terms
+              </button>
+            </Link>
           </p>
         </div>
       </div>
