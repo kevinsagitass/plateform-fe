@@ -90,7 +90,7 @@ const BreadcrumbNav = () => {
 
   const items: BreadcrumbItem[] = [
     {
-      label: "Index",
+      label: "Organization",
       icon: Home,
       onClick: async () => {
         dispatch(

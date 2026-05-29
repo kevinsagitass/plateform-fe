@@ -72,14 +72,9 @@ const OrganizationCard = ({
               )}
             </div>
 
-            <p className="flex items-center gap-1 text-xs text-neutral-500 dark:text-neutral-400 mt-0.5">
-              <Users size={10} />
-              Total Staff {organization.totalStaff}
-            </p>
-
-            <p className="flex items-center gap-1 text-xs text-neutral-500 dark:text-neutral-400 mt-0.5">
+            <p className="flex items-center gap-1 mt-2 text-xs text-neutral-500 dark:text-neutral-400 mt-0.5">
               <Store size={10} />
-              Total Tenant {organization.totalTenant}
+              Total Tenant Active : {organization.totalTenant}
             </p>
           </div>
         </div>

@@ -13,6 +13,7 @@ const pageTitles: Record<PageKey, { title: string }> = {
   users: { title: "Users" },
   settings: { title: "Settings" },
   tenants: { title: "Tenants" },
+  "organization-menus": { title: "Organization Menus" },
   reports: { title: "Reports" },
   tables: { title: "Tables" },
   orders: { title: "Orders" },

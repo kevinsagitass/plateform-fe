@@ -1,6 +1,23 @@
 import { ApiResponse } from "@/types";
 import api from "../config/api";
-import { InviteOrganizationMember, OrganizationRole } from "@/types/role";
+import {
+  InviteOrganizationMember,
+  InviteTenantMember,
+  OrganizationRole,
+  OrgUserRole,
+  TenantRole,
+  TenantUserRole,
+} from "@/types/role";
+
+export const getAllOrganizationUsersRole = async (
+  organizationId: string
+): Promise<ApiResponse<OrgUserRole[]>> => {
+  const result = await api.get<ApiResponse<OrgUserRole[]>>(
+    `/roles/organizations/${organizationId}`
+  );
+
+  return result.data;
+};
 
 export const inviteOrganizationMember = async (
   organizationId: string,
@@ -21,6 +38,40 @@ export const removeOrganizationUser = async (
 ): Promise<ApiResponse<string>> => {
   const result = await api.delete<ApiResponse<string>>(
     `/roles/organizations/${organizationId}/${userId}/${role}`
+  );
+
+  return result.data;
+};
+
+export const getAllTenantUsersRole = async (
+  tenantId: string
+): Promise<ApiResponse<TenantUserRole[]>> => {
+  const result = await api.get<ApiResponse<TenantUserRole[]>>(
+    `/roles/tenants/${tenantId}`
+  );
+
+  return result.data;
+};
+
+export const inviteTenantMember = async (
+  tenantId: string,
+  data: InviteTenantMember
+): Promise<ApiResponse<string>> => {
+  const result = await api.post<ApiResponse<string>>(
+    `/roles/tenants/${tenantId}/invite`,
+    data
+  );
+
+  return result.data;
+};
+
+export const removeTenantUser = async (
+  tenantId: string,
+  userId: string,
+  role: TenantRole
+): Promise<ApiResponse<string>> => {
+  const result = await api.delete<ApiResponse<string>>(
+    `/roles/tenants/${tenantId}/${userId}/${role}`
   );
 
   return result.data;

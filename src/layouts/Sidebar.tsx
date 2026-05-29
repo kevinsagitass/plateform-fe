@@ -9,6 +9,7 @@ export type PageKey =
   | "dashboard"
   | "users"
   | "tenants"
+  | "organization-menus"
   | "reports"
   | "tables"
   | "orders"

@@ -53,6 +53,12 @@ export const menus: Record<Role, MenuConfig> = {
         icon: StoreIcon,
       },
       {
+        key: "organization-menus",
+        label: "Organization Menus",
+        path: (params) => `/organization/${params.orgId}/menus`,
+        icon: UtensilsIcon,
+      },
+      {
         key: "reports",
         label: "Organization Reports",
         path: (params) => `/organization/${params.orgId}/reports`,
@@ -109,6 +115,12 @@ export const menus: Record<Role, MenuConfig> = {
         label: "Tenants",
         path: (params) => `/organization/${params.orgId}/tenants`,
         icon: StoreIcon,
+      },
+      {
+        key: "organization-menus",
+        label: "Organization Menus",
+        path: (params) => `/organization/${params.orgId}/menus`,
+        icon: UtensilsIcon,
       },
       {
         key: "reports",

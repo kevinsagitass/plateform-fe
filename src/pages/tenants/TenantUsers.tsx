@@ -13,104 +13,141 @@ import {
   X,
   Check,
   Search,
-  Crown,
   MoreHorizontal,
   AlertTriangle,
+  ChefHat,
+  UserCog,
+  BanknoteArrowDown,
 } from "lucide-react";
-import { OrganizationRole, OrgUserRole } from "@/types/role";
+import { TenantRole, TenantUserRole } from "@/types/role";
 import { Avatar } from "@/components/ui/Avatar";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { createPortal } from "react-dom";
 import { useNavigate } from "react-router-dom";
 import toast from "react-hot-toast";
 import {
-  getAllOrganizationUsersRole,
-  inviteOrganizationMember,
-  removeOrganizationUser,
+  getAllTenantUsersRole,
+  inviteTenantMember,
+  removeTenantUser,
 } from "@/services/RoleService";
 import { useAuth } from "@/hooks/useAuth";
 
-const ROLE_STYLES: Record<OrganizationRole, string> = {
-  OWNER:
+const ROLE_STYLES: Record<TenantRole, string> = {
+  STORE_MANAGER:
     "bg-primary-50 dark:bg-primary-950/40 text-primary-700 dark:text-primary-400 border border-primary-200 dark:border-primary-800",
-  ADMIN:
-    "bg-info-light dark:bg-info-dark/20 text-info-dark dark:text-info border border-blue-200 dark:border-blue-800"
+  CASHIER:
+    "bg-info-light dark:bg-info-dark/20 text-info-dark dark:text-info border border-blue-200 dark:border-blue-800",
+  COOK: "",
 };
 
-const ROLE_ICONS: Record<OrganizationRole, React.ReactNode> = {
-  OWNER: <Crown className="w-3 h-3" />,
-  ADMIN: <Shield className="w-3 h-3" />
+const ROLE_ICONS: Record<TenantRole, React.ReactNode> = {
+  STORE_MANAGER: <UserCog className="w-3 h-3" />,
+  CASHIER: <BanknoteArrowDown className="w-3 h-3" />,
+  COOK: <ChefHat className="w-3 h-3" />,
 };
 
 // ─── Role Dropdown ────────────────────────────────────────────────────────────
 
 const ROLES: {
-  value: OrganizationRole;
+  value: TenantRole;
   label: string;
   description: string;
   icon: React.ReactNode;
 }[] = [
   {
-    value: "ADMIN",
-    label: "Admin",
-    description: "Manage members and settings",
-    icon: <Shield className="w-3.5 h-3.5" />,
+    value: "STORE_MANAGER",
+    label: "Store Manager",
+    description: "Manage members, tables, and special menus",
+    icon: <UserCog className="w-3.5 h-3.5" />,
+  },
+  {
+    value: "CASHIER",
+    label: "Cashier",
+    description: "Manage orders and reservations",
+    icon: <BanknoteArrowDown className="w-3.5 h-3.5" />,
+  },
+  {
+    value: "COOK",
+    label: "Cook",
+    description: "See ongoing orders",
+    icon: <ChefHat className="w-3.5 h-3.5" />,
   },
 ];
 
-const RoleDropdown = ({ currentRole, onSelect, onClose }) => {
-  return (
-    <motion.div
-      initial={{ opacity: 0, y: -8, scale: 0.96 }}
-      animate={{ opacity: 1, y: 0, scale: 1 }}
-      exit={{ opacity: 0, y: -8, scale: 0.96 }}
-      transition={{ duration: 0.15, ease: "easeOut" }}
-      className="absolute right-0 top-full mt-1.5 w-56 bg-white dark:bg-neutral-900 rounded-xl shadow-menu border border-neutral-200 dark:border-neutral-700 z-50 overflow-hidden"
-    >
-      <div className="p-1.5">
-        {ROLES.map((role) => (
-          <button
-            key={role.value}
-            onClick={() => {
-              onSelect(role.value);
-              onClose();
-            }}
-            className={`
-              w-full flex items-center gap-3 px-3 py-2.5 rounded-lg text-left transition-colors
-              ${
-                currentRole === role.value
-                  ? "bg-primary-50 dark:bg-primary-950/40 text-primary-700 dark:text-primary-400"
-                  : "hover:bg-neutral-50 dark:hover:bg-neutral-800 text-neutral-700 dark:text-neutral-300"
-              }
-            `}
-          >
-            <span
+const RoleDropdown = ({
+  currentRole,
+  onSelect,
+  onClose,
+  anchorRect,
+}: {
+  currentRole: TenantRole;
+  onSelect: (role: TenantRole) => void;
+  onClose: () => void;
+  anchorRect: DOMRect;
+}) => {
+  const menuWidth = 224; // w-56 = 224px
+  const left = anchorRect.left;
+  const top = anchorRect.bottom + 6;
+
+  return createPortal(
+    <>
+      {/* Click-away overlay */}
+      <div className="fixed inset-0 z-[9998]" onClick={onClose} />
+
+      <motion.div
+        initial={{ opacity: 0, y: -8, scale: 0.96 }}
+        animate={{ opacity: 1, y: 0, scale: 1 }}
+        exit={{ opacity: 0, y: -8, scale: 0.96 }}
+        transition={{ duration: 0.15, ease: "easeOut" }}
+        style={{ position: "fixed", top, left, width: menuWidth }}
+        className="bg-white dark:bg-neutral-900 rounded-xl shadow-menu border border-neutral-200 dark:border-neutral-700 z-[9999] overflow-hidden"
+      >
+        <div className="p-1.5">
+          {ROLES.map((role) => (
+            <button
+              key={role.value}
+              onClick={() => {
+                onSelect(role.value);
+                onClose();
+              }}
               className={`
-              flex-shrink-0 p-1 rounded-md
-              ${
-                currentRole === role.value
-                  ? "bg-primary-100 dark:bg-primary-900/50 text-primary-600 dark:text-primary-400"
-                  : "bg-neutral-100 dark:bg-neutral-700 text-neutral-500 dark:text-neutral-400"
-              }
-            `}
+                  w-full flex items-center gap-3 px-3 py-2.5 rounded-lg text-left transition-colors
+                  ${
+                    currentRole === role.value
+                      ? "bg-primary-50 dark:bg-primary-950/40 text-primary-700 dark:text-primary-400"
+                      : "hover:bg-neutral-50 dark:hover:bg-neutral-800 text-neutral-700 dark:text-neutral-300"
+                  }
+                `}
             >
-              {role.icon}
-            </span>
-            <div className="flex-1 min-w-0">
-              <div className="flex items-center justify-between">
-                <span className="text-sm font-medium">{role.label}</span>
-                {currentRole === role.value && (
-                  <Check className="w-3.5 h-3.5 text-primary-600 dark:text-primary-400" />
-                )}
+              <span
+                className={`
+                  flex-shrink-0 p-1 rounded-md
+                  ${
+                    currentRole === role.value
+                      ? "bg-primary-100 dark:bg-primary-900/50 text-primary-600 dark:text-primary-400"
+                      : "bg-neutral-100 dark:bg-neutral-700 text-neutral-500 dark:text-neutral-400"
+                  }
+                `}
+              >
+                {role.icon}
+              </span>
+              <div className="flex-1 min-w-0">
+                <div className="flex items-center justify-between">
+                  <span className="text-sm font-medium">{role.label}</span>
+                  {currentRole === role.value && (
+                    <Check className="w-3.5 h-3.5 text-primary-600 dark:text-primary-400" />
+                  )}
+                </div>
+                <p className="text-2xs text-neutral-400 dark:text-neutral-500 mt-0.5">
+                  {role.description}
+                </p>
               </div>
-              <p className="text-2xs text-neutral-400 dark:text-neutral-500 mt-0.5">
-                {role.description}
-              </p>
-            </div>
-          </button>
-        ))}
-      </div>
-    </motion.div>
+            </button>
+          ))}
+        </div>
+      </motion.div>
+    </>,
+    document.body
   );
 };
 
@@ -121,14 +158,15 @@ const InviteModal = ({
   onInvite,
 }: {
   onClose: () => void;
-  onInvite: (email: string, role: OrganizationRole) => void;
+  onInvite: (email: string, role: TenantRole) => void;
 }) => {
   const [email, setEmail] = useState("");
-  const [selectedRole, setSelectedRole] = useState<OrganizationRole>("ADMIN");
+  const [selectedRole, setSelectedRole] = useState<TenantRole>("STORE_MANAGER");
   const [roleDropdownOpen, setRoleDropdownOpen] = useState(false);
   const [emailError, setEmailError] = useState("");
   const [isSubmitting, setIsSubmitting] = useState(false);
-  const { activeOrganizationId } = useAppSelector((state) => state.role);
+  const [roleAnchorRect, setRoleAnchorRect] = useState<DOMRect | null>(null);
+  const { activeTenantId } = useAppSelector((state) => state.role);
 
   const validateEmail = (val: string) => /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(val);
 
@@ -141,7 +179,7 @@ const InviteModal = ({
     setEmailError("");
     setIsSubmitting(true);
     try {
-      await inviteOrganizationMember(activeOrganizationId, {
+      await inviteTenantMember(activeTenantId, {
         email,
         role: selectedRole,
       });
@@ -153,7 +191,7 @@ const InviteModal = ({
       } else if (typeof error === "string") {
         toast.error(error);
       } else {
-        toast.error("Failed to create organization");
+        toast.error("Failed to create Tenant");
       }
 
       throw error;
@@ -200,7 +238,7 @@ const InviteModal = ({
                 Invite Member
               </h2>
               <p className="text-xs text-neutral-400 dark:text-neutral-500 mt-0.5">
-                Send an invitation to join your organization
+                Send an invitation to join your tenant
               </p>
             </div>
           </div>
@@ -266,7 +304,16 @@ const InviteModal = ({
             <div className="relative">
               <button
                 type="button"
-                onClick={() => setRoleDropdownOpen((v) => !v)}
+                onClick={(e) => {
+                  const rect = e.currentTarget.getBoundingClientRect();
+                  if (roleDropdownOpen) {
+                    setRoleDropdownOpen(false);
+                    setRoleAnchorRect(null);
+                  } else {
+                    setRoleDropdownOpen(true);
+                    setRoleAnchorRect(rect);
+                  }
+                }}
                 className="w-full flex items-center justify-between px-3 py-2.5 rounded-xl border border-neutral-200 dark:border-neutral-700 bg-white dark:bg-neutral-800 hover:border-neutral-300 dark:hover:border-neutral-600 transition-colors text-sm text-neutral-800 dark:text-neutral-200"
               >
                 <div className="flex items-center gap-2.5">
@@ -289,11 +336,15 @@ const InviteModal = ({
                 />
               </button>
               <AnimatePresence>
-                {roleDropdownOpen && (
+                {roleDropdownOpen && roleAnchorRect && (
                   <RoleDropdown
                     currentRole={selectedRole}
                     onSelect={setSelectedRole}
-                    onClose={() => setRoleDropdownOpen(false)}
+                    onClose={() => {
+                      setRoleDropdownOpen(false);
+                      setRoleAnchorRect(null);
+                    }}
+                    anchorRect={roleAnchorRect}
                   />
                 )}
               </AnimatePresence>
@@ -348,32 +399,28 @@ const RemoveModal = ({
   onClose,
   onConfirm,
 }: {
-  user: OrgUserRole;
+  user: TenantUserRole;
   onClose: () => void;
   onConfirm: () => void;
 }) => {
   const [isRemoving, setIsRemoving] = useState(false);
-  const { activeOrganizationId } = useAppSelector((state) => state.role);
+  const { activeTenantId } = useAppSelector((state) => state.role);
   const queryClient = useQueryClient();
 
   const handleConfirm = async () => {
     setIsRemoving(true);
     try {
-      await removeOrganizationUser(
-        activeOrganizationId,
-        user.userId,
-        user.role
-      );
+      await removeTenantUser(activeTenantId, user.userId, user.role);
       onConfirm();
 
-      queryClient.invalidateQueries({ queryKey: ["organizationsUsersRole"] });
+      queryClient.invalidateQueries({ queryKey: ["tenantUsersRole"] });
     } catch (error) {
       if (error instanceof Error) {
         toast.error(error.message);
       } else if (typeof error === "string") {
         toast.error(error);
       } else {
-        toast.error("Failed to create organization");
+        toast.error("Failed to create tenant");
       }
       // Re-throw so the modal stays open on error
       throw error;
@@ -416,7 +463,7 @@ const RemoveModal = ({
               <span className="font-medium text-neutral-700 dark:text-neutral-300">
                 {user.name}
               </span>{" "}
-              from the organization? This action cannot be undone.
+              from the tenant? This action cannot be undone.
             </p>
           </div>
           <div className="flex items-center gap-3 w-full">
@@ -467,7 +514,7 @@ const RowActionMenu = ({
   onClose,
   anchorRect,
 }: {
-  user: OrgUserRole;
+  user: TenantUserRole;
   onEditRole: () => void;
   onRemove: () => void;
   onClose: () => void;
@@ -476,7 +523,9 @@ const RowActionMenu = ({
   const menuWidth = 176;
   const left = anchorRect.right - menuWidth;
   const top = anchorRect.bottom + 6;
-  const { activeOrganizationId } = useAppSelector((state) => state.role);
+  const { activeOrganizationId, activeTenantId } = useAppSelector(
+    (state) => state.role
+  );
   const { user: currentUser } = useAuth();
 
   return createPortal(
@@ -491,8 +540,13 @@ const RowActionMenu = ({
       <div className="p-1.5 space-y-0.5">
         {currentUser.organizationRoles.some(
           (role) =>
-            role.organizationId === activeOrganizationId &&
-            role.role === "OWNER"
+            (role.organizationId === activeOrganizationId &&
+              role.role === "OWNER") ||
+            currentUser.tenantRoles.some(
+              (role) =>
+                role.tenantId === activeTenantId &&
+                role.role === "STORE_MANAGER"
+            )
         ) && (
           <button
             onClick={() => {
@@ -505,7 +559,7 @@ const RowActionMenu = ({
             Edit Role
           </button>
         )}
-        {user.role !== "OWNER" && (
+        {user.role !== "STORE_MANAGER" && (
           <>
             <div className="h-px bg-neutral-100 dark:bg-neutral-800 mx-1" />
             <button
@@ -528,28 +582,30 @@ const RowActionMenu = ({
 
 // ─── Main Page ────────────────────────────────────────────────────────────────
 
-const OrgUsers = () => {
-  const { activeOrganizationId } = useAppSelector((state) => state.role);
+const TenantUsers = () => {
+  const { activeOrganizationId, activeTenantId } = useAppSelector(
+    (state) => state.role
+  );
   const [currentPage, setCurrentPage] = useState<PageKey>("users");
   const queryClient = useQueryClient();
   const navigate = useNavigate();
 
-  const { data: organizationUsersRoleData } = useQuery({
-    queryKey: ["organizationsUsersRole"],
-    queryFn: () => getAllOrganizationUsersRole(activeOrganizationId),
+  const { data: tenantUsersRoleData } = useQuery({
+    queryKey: ["tenantUsersRole"],
+    queryFn: () => getAllTenantUsersRole(activeTenantId),
   });
 
-  const users = organizationUsersRoleData?.data || [];
+  const users = tenantUsersRoleData?.data || [];
 
   useEffect(() => {
     if (!activeOrganizationId) navigate("/home");
-    queryClient.invalidateQueries({ queryKey: ["organizationsUsersRole"] });
+    queryClient.invalidateQueries({ queryKey: ["tenantUsersRole"] });
   }, []);
 
   const [search, setSearch] = useState("");
   const [inviteOpen, setInviteOpen] = useState(false);
-  const [removeTarget, setRemoveTarget] = useState<OrgUserRole | null>(null);
-  const [editRoleTarget, setEditRoleTarget] = useState<OrgUserRole | null>(
+  const [removeTarget, setRemoveTarget] = useState<TenantUserRole | null>(null);
+  const [editRoleTarget, setEditRoleTarget] = useState<TenantUserRole | null>(
     null
   );
   const [openMenuId, setOpenMenuId] = useState<string | null>(null);
@@ -563,9 +619,9 @@ const OrgUsers = () => {
 
   const handleRoleChange = (
     userId: string,
-    organizationId: string,
+    tenantId: string,
     role: string,
-    newRole: OrganizationRole
+    newRole: TenantRole
   ) => {
     setEditRoleTarget(null);
   };
@@ -590,10 +646,10 @@ const OrgUsers = () => {
         >
           <div>
             <h1 className="text-2xl font-bold text-neutral-900 dark:text-neutral-100 font-display tracking-tight">
-              Organization Members
+              Tenant Members
             </h1>
             <p className="text-sm text-neutral-500 dark:text-neutral-400 mt-1">
-              Manage who has access to your organization and their roles.
+              Manage who has access to your tenant and their roles.
             </p>
           </div>
           <button
@@ -721,7 +777,7 @@ const OrgUsers = () => {
                         {/* Actions */}
                         <td className="px-5 py-3.5">
                           <div className="relative flex justify-end">
-                            {user.role !== "OWNER" && (
+                            {user.role !== "STORE_MANAGER" && (
                               <button
                                 onClick={(e) => {
                                   const rect =
@@ -844,7 +900,7 @@ const OrgUsers = () => {
                     onClick={() =>
                       handleRoleChange(
                         editRoleTarget.userId,
-                        editRoleTarget.organizationId,
+                        editRoleTarget.tenantId,
                         editRoleTarget.role,
                         role.value
                       )
@@ -911,4 +967,4 @@ const OrgUsers = () => {
   );
 };
 
-export default OrgUsers;
+export default TenantUsers;

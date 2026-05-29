@@ -135,8 +135,8 @@ const OrganizationHome = () => {
             </div>
 
             {/* Add Button */}
-            {user.subscription.plan != "FREE" &&
-              organizations.length < subscriptionConfig.maxOrganization && (
+            {user?.subscription?.plan != "FREE" &&
+              organizations?.length < subscriptionConfig?.maxOrganization && (
                 <button
                   onClick={() => setIsModalOpen(true)}
                   className="

@@ -23,7 +23,7 @@ export const getUserTenantRole = async (
 };
 
 export const createTenant = async (data: Tenant): Promise<ApiResponse<any>> => {
-  const result = await api.post<ApiResponse<any>>(`/tenants`);
+  const result = await api.post<ApiResponse<any>>(`/tenants`, data);
 
   return result.data;
 };
@@ -36,3 +36,4 @@ export const patchTenant = async (data: Tenant): Promise<ApiResponse<any>> => {
 
   return result.data;
 };
+

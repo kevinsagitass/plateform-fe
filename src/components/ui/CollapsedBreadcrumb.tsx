@@ -20,7 +20,7 @@ const CollapsedBreadcrumb = () => {
 
   const crumbs = [
     {
-      label: "Index",
+      label: "Organization",
       icon: Home,
       onClick: async () => {
         dispatch(

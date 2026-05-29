@@ -68,13 +68,15 @@ function AuthProvider({ children }: AuthProviderProps) {
 
       setAuth(user, token);
 
-      const subscriptionRes = await getSubscriptionConfig(
-        user.subscription.plan
-      );
+      if (user) {
+        const subscriptionRes = await getSubscriptionConfig(
+          user.subscription.plan
+        );
 
-      const subscriptionConfig = subscriptionRes.data;
+        const subscriptionConfig = subscriptionRes.data;
 
-      setSubscriptionConfig(subscriptionConfig);
+        setSubscriptionConfig(subscriptionConfig);
+      }
 
       toast.success(`Welcome back, ${user.name}`);
 

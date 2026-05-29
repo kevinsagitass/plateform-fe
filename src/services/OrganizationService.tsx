@@ -1,7 +1,6 @@
 import { ApiResponse } from "@/types";
 import api from "../config/api";
 import { OrganizationUser } from "@/types/organization";
-import { OrgUserRole } from "@/types/role";
 
 export const getUserOrganizations = async (): Promise<
   ApiResponse<OrganizationUser[]>
@@ -18,16 +17,6 @@ export const getUserOrganizationRole = async (
 ): Promise<ApiResponse<string>> => {
   const result = await api.get<ApiResponse<string>>(
     `/organizations/${organizationId}/role`
-  );
-
-  return result.data;
-};
-
-export const getAllOrganizationUsersRole = async (
-  organizationId: string
-): Promise<ApiResponse<OrgUserRole[]>> => {
-  const result = await api.get<ApiResponse<OrgUserRole[]>>(
-    `/roles/organizations/${organizationId}`
   );
 
   return result.data;

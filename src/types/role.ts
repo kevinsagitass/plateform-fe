@@ -1,12 +1,6 @@
-export type Role =
-  | "OWNER"
-  | "ADMIN"
-  | "STAFF"
-  | "STORE_MANAGER"
-  | "CASHIER"
-  | "COOK";
+export type Role = "OWNER" | "ADMIN" | "STORE_MANAGER" | "CASHIER" | "COOK";
 
-export type OrganizationRole = "OWNER" | "ADMIN" | "STAFF";
+export type OrganizationRole = "OWNER" | "ADMIN";
 
 export type TenantRole = "STORE_MANAGER" | "CASHIER" | "COOK";
 
@@ -31,4 +25,9 @@ export interface TenantUserRole {
 export interface InviteOrganizationMember {
   email: string;
   role: OrganizationRole;
+}
+
+export interface InviteTenantMember {
+  email: string;
+  role: TenantRole;
 }
