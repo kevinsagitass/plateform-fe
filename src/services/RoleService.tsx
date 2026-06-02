@@ -65,13 +65,31 @@ export const inviteTenantMember = async (
   return result.data;
 };
 
+export const editTenantUserRole = async (
+  organizationId: string,
+  tenantId: string,
+  userId: string,
+  role: TenantRole,
+  newRole: TenantRole
+): Promise<ApiResponse<any>> => {
+  const result = await api.patch<ApiResponse<any>>(
+    `/roles/${organizationId}/tenants/${tenantId}/${userId}/${role}`,
+    {
+      newRole,
+    }
+  );
+
+  return result.data;
+};
+
 export const removeTenantUser = async (
+  organizationId: string,
   tenantId: string,
   userId: string,
   role: TenantRole
-): Promise<ApiResponse<string>> => {
-  const result = await api.delete<ApiResponse<string>>(
-    `/roles/tenants/${tenantId}/${userId}/${role}`
+): Promise<ApiResponse<any>> => {
+  const result = await api.delete<ApiResponse<any>>(
+    `/roles/${organizationId}/tenants/${tenantId}/${userId}/${role}`
   );
 
   return result.data;

@@ -12,6 +12,7 @@ import {
 } from "@/services/OrganizationService";
 import toast from "react-hot-toast";
 import { useAuth } from "@/hooks/useAuth";
+import useSubscriptionConfig from "@/hooks/useSubscriptionConfig";
 
 const OrganizationHome = () => {
   const dispatch = useAppDispatch();
@@ -20,7 +21,8 @@ const OrganizationHome = () => {
   const [selectedId, setSelectedId] = useState<string | null>(null);
   const [isLoading, setIsLoading] = useState(false);
   const [isModalOpen, setIsModalOpen] = useState(false);
-  const { user, subscriptionConfig } = useAuth();
+  const { user } = useAuth();
+  const { subscriptionConfig } = useSubscriptionConfig();
 
   const { data: organizationData } = useQuery({
     queryKey: ["organizations"],

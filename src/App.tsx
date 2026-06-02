@@ -16,6 +16,7 @@ import Tenants from "./pages/organizations/Tenants";
 import { ThemeProvider } from "./context/ThemeProvider";
 import OrgMenus from "./pages/organizations/OrgMenus";
 import TenantUsers from "./pages/tenants/TenantUsers";
+import Tables from "./pages/tenants/Tables";
 
 export default function App() {
   return (
@@ -57,6 +58,7 @@ export default function App() {
                 <Route path="/organization/:orgId/tenant/:tenantId">
                   <Route path="dashboard" element={<TenantDashboard />} />
                   <Route path="users" element={<TenantUsers />} />
+                  <Route path="tables" element={<Tables />} />
                   {/* <Route path="tables" element={<Tables />} />
                 <Route path="orders" element={<Orders />} />
                 <Route path="reports" element={<TenantReports />} />{" "}

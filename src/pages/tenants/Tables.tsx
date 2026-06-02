@@ -1,187 +1,128 @@
 import { useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import {
-  Store,
+  Table2,
   Search,
   Plus,
   SlidersHorizontal,
-  Building2,
+  LayoutGrid,
 } from "lucide-react";
 import { Layout } from "@/layouts/Layout";
 import { PageKey } from "@/layouts/Sidebar";
 import { useAppSelector } from "@/store/hooks";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import toast from "react-hot-toast";
-import EditableTenantCard from "@/components/tenants/EditableTenantCard";
-import TenantCardSkeleton from "@/components/tenants/TenantCardSkeleton";
-import TenantModal from "@/components/tenants/TenantModal";
-import DeleteTenantModal from "@/components/tenants/DeleteTenantModal";
 import {
   DropdownMenu,
   DropdownMenuContent,
   DropdownMenuCheckboxItem,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
+import TableCard from "@/components/tenants/tables/TableCard";
+import TableCardSkeleton from "@/components/tenants//tables/TableCardSkeleton";
+import TableModal from "@/components/tenants//tables/TableModal";
+import DeleteTableModal from "@/components/tenants//tables/DeleteTableModal";
+import QRModal from "@/components/tenants//tables/QRModal";
 import {
-  createTenant,
-  getUserTenants,
-  patchTenant,
-} from "@/services/TenantService";
-import { TenantWorkHour } from "@/types/tenant";
-import { useAuth } from "@/hooks/useAuth";
-import useSubscriptionConfig from "@/hooks/useSubscriptionConfig";
+  getTables,
+  createTable,
+  updateTable,
+  deleteTable,
+} from "@/services/TableService";
+import { Table } from "@/types/table";
 
-const addTenant = async (data: {
-  organizationId: string;
-  tenantName: string;
-  tenantLocation: string;
-  workHours: TenantWorkHour[];
-}) => {
-  try {
-    await createTenant({
-      organizationId: data.organizationId,
-      tenantName: data.tenantName,
-      location: data.tenantLocation,
-      tenantWorkHours: data.workHours,
-    });
-  } catch (error) {
-    if (error instanceof Error) {
-      toast.error(error.message);
-    } else if (typeof error === "string") {
-      toast.error(error);
-    } else {
-      toast.error("Failed to create organization");
-    }
-    throw error;
-  }
-};
-
-export const updateTenant = async (data: {
-  tenantId: string;
-  tenantName?: string;
-  location?: string;
-  tenantWorkHours?: TenantWorkHour[];
-  isActive?: boolean;
-}) => {
-  try {
-    await patchTenant(data);
-  } catch (error) {
-    if (error instanceof Error) {
-      toast.error(error.message);
-    } else if (typeof error === "string") {
-      toast.error(error);
-    } else {
-      toast.error("Failed to create organization");
-    }
-    throw error;
-  }
-};
-
-const deleteTenant = async (id: string) => {
-  const res = await fetch(`/api/tenants/${id}`, { method: "DELETE" });
-  if (!res.ok) throw new Error("Failed to delete tenant");
-};
+// Base URL untuk QR order (sesuaikan dengan domain kamu)
+const BASE_ORDER_URL = `${window.location.origin}/order`;
 
 type FilterStatus = "all" | "active" | "inactive";
 
-const Tenants = () => {
-  const { activeOrganizationId } = useAppSelector((state) => state.role);
-  const { user } = useAuth();
-  const { subscriptionConfig } = useSubscriptionConfig();
-  const [currentPage, setCurrentPage] = useState<PageKey>("tenants");
+const Tables = () => {
+  const { activeTenantId } = useAppSelector((state) => state.role);
+  const [currentPage, setCurrentPage] = useState<PageKey>("tables");
   const queryClient = useQueryClient();
 
   const [search, setSearch] = useState("");
   const [filterStatus, setFilterStatus] = useState<FilterStatus>("all");
   const [createOpen, setCreateOpen] = useState(false);
-  const [editTarget, setEditTarget] = useState<any | null>(null);
-  const [deleteTarget, setDeleteTarget] = useState<any | null>(null);
+  const [editTarget, setEditTarget] = useState<Table | null>(null);
+  const [deleteTarget, setDeleteTarget] = useState<Table | null>(null);
+  const [qrTarget, setQrTarget] = useState<Table | null>(null);
 
-  const { data: tenants, isLoading } = useQuery({
-    queryKey: ["tenants", activeOrganizationId],
-    queryFn: () => getUserTenants(activeOrganizationId),
-    enabled: !!activeOrganizationId,
+  const { data: tablesData, isLoading } = useQuery({
+    queryKey: ["tables", activeTenantId],
+    queryFn: () => getTables(activeTenantId!),
+    enabled: !!activeTenantId,
   });
 
-  const tenantsData = tenants?.data || [];
+  const tables: Table[] = tablesData?.data || [];
 
   const invalidate = () =>
-    queryClient.invalidateQueries({
-      queryKey: ["tenants", activeOrganizationId],
-    });
+    queryClient.invalidateQueries({ queryKey: ["tables", activeTenantId] });
 
   const createMutation = useMutation({
-    mutationFn: addTenant,
+    mutationFn: (values: { number: number }) =>
+      createTable({ tenantId: activeTenantId!, ...values }),
     onSuccess: () => {
-      toast.success("Tenant created successfully");
+      toast.success("Table created successfully");
       invalidate();
     },
     onError: (err: Error) => toast.error(err.message),
   });
 
   const updateMutation = useMutation({
-    mutationFn: updateTenant,
+    mutationFn: (data: {
+      tableId: string;
+      number?: number;
+      isActive?: boolean;
+    }) => updateTable(data),
     onSuccess: () => {
-      toast.success("Tenant updated successfully");
+      toast.success("Table updated successfully");
       invalidate();
     },
     onError: (err: Error) => toast.error(err.message),
   });
 
   const deleteMutation = useMutation({
-    mutationFn: deleteTenant,
+    mutationFn: (tableId: string) => deleteTable(tableId),
     onSuccess: () => {
-      toast.success("Tenant deleted successfully");
+      toast.success("Table deleted successfully");
       invalidate();
     },
     onError: (err: Error) => toast.error(err.message),
   });
 
-  const handleCreate = async (values: {
-    tenantName: string;
-    tenantLocation: string;
-    workHours: TenantWorkHour[];
-  }) => {
-    await createMutation.mutateAsync({
-      organizationId: activeOrganizationId,
-      ...values,
-    });
+  const handleCreate = async (values: { number: number }) => {
+    await createMutation.mutateAsync(values);
   };
 
-  const handleEdit = async (values: {
-    tenantName: string;
-    tenantLocation: string;
-    workHours: TenantWorkHour[];
-  }) => {
+  const handleEdit = async (values: { number: number }) => {
     if (!editTarget) return;
-
     await updateMutation.mutateAsync({
-      tenantId: editTarget.tenantId,
-      tenantName: values.tenantName,
-      location: values.tenantLocation,
-      tenantWorkHours: values.workHours,
+      tableId: editTarget.tableId,
+      number: values.number,
     });
+    setEditTarget(null);
   };
 
   const handleDelete = async () => {
     if (!deleteTarget) return;
-    await deleteMutation.mutateAsync(deleteTarget.id);
+    await deleteMutation.mutateAsync(deleteTarget.tableId);
+    setDeleteTarget(null);
   };
 
-  const handleToggleActive = async (tenant: any) => {
+  const handleToggleActive = async (table: Table) => {
     await updateMutation.mutateAsync({
-      tenantId: tenant.tenantId,
-      isActive: !tenant.isActive,
+      tableId: table.tableId,
+      isActive: !table.isActive,
     });
     toast.success(
-      `${tenant.tenantName} ${!tenant.isActive ? "activated" : "deactivated"}`
+      `Table ${table.number} ${!table.isActive ? "activated" : "deactivated"}`
     );
   };
 
-  const filtered = tenantsData.filter((t) => {
-    const matchSearch =
-      t.tenantName.toLowerCase().includes(search.toLowerCase()) ||
-      t.tenantLocation.toLowerCase().includes(search.toLowerCase());
+  // Filter
+  const filtered = tables.filter((t) => {
+    const matchSearch = t.number.toString().includes(search);
     const matchStatus =
       filterStatus === "all"
         ? true
@@ -191,14 +132,13 @@ const Tenants = () => {
     return matchSearch && matchStatus;
   });
 
-  const activeCount = tenantsData.filter((t) => t.isActive).length;
-  const inactiveCount = tenantsData.filter((t) => !t.isActive).length;
+  const activeCount = tables.filter((t) => t.isActive).length;
+  const inactiveCount = tables.filter((t) => !t.isActive).length;
 
-  // Stats config
   const stats = [
     {
       label: "Total",
-      value: tenantsData.length,
+      value: tables.length,
       color:
         "bg-primary-50 dark:bg-primary-950/40 text-primary-600 dark:text-primary-400",
       dot: "bg-primary-500",
@@ -222,7 +162,7 @@ const Tenants = () => {
   return (
     <Layout currentPage={currentPage} onNavigate={setCurrentPage}>
       <div className="p-4 sm:p-6 lg:p-8 max-w-5xl mx-auto">
-        {/* ── Page Header ─────────────────────────────────────────────────── */}
+        {/* ── Header ─────────────────────────────────────────────────────── */}
         <motion.div
           className="mb-8"
           initial={{ opacity: 0, y: 12 }}
@@ -232,32 +172,29 @@ const Tenants = () => {
           <div className="flex items-center justify-between gap-4 flex-wrap">
             <div className="flex items-center gap-3">
               <div className="w-10 h-10 rounded-xl bg-gradient-warm flex items-center justify-center shadow-order shrink-0">
-                <Store size={20} className="text-white" />
+                <Table2 size={20} className="text-white" />
               </div>
               <div>
                 <h1 className="font-display font-bold text-2xl text-neutral-900 dark:text-neutral-100">
-                  Tenants
+                  Tables
                 </h1>
                 <p className="text-sm text-neutral-500 dark:text-neutral-400">
-                  Manage your store locations
+                  Manage restaurant tables & QR codes
                 </p>
               </div>
             </div>
 
-            {user.subscription?.plan !== "FREE" &&
-              tenantsData.length < subscriptionConfig?.maxTenant && (
-                <button
-                  onClick={() => setCreateOpen(true)}
-                  className="flex items-center gap-2 px-4 py-2.5 text-sm font-semibold bg-gradient-warm text-white rounded-xl shadow-order hover:shadow-lg hover:-translate-y-0.5 transition-all duration-200"
-                >
-                  <Plus size={16} />
-                  <span>Add Tenant</span>
-                </button>
-              )}
+            <button
+              onClick={() => setCreateOpen(true)}
+              className="flex items-center gap-2 px-4 py-2.5 text-sm font-semibold bg-gradient-warm text-white rounded-xl shadow-order hover:shadow-lg hover:-translate-y-0.5 transition-all duration-200"
+            >
+              <Plus size={16} />
+              <span>Add Table</span>
+            </button>
           </div>
         </motion.div>
 
-        {/* ── Stats Row ───────────────────────────────────────────────────── */}
+        {/* ── Stats ──────────────────────────────────────────────────────── */}
         <motion.div
           className="grid grid-cols-3 gap-3 mb-6"
           initial={{ opacity: 0, y: 12 }}
@@ -293,7 +230,6 @@ const Tenants = () => {
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.3, delay: 0.1 }}
         >
-          {/* Search */}
           <div className="relative flex-1">
             <Search
               size={16}
@@ -303,12 +239,11 @@ const Tenants = () => {
               type="text"
               value={search}
               onChange={(e) => setSearch(e.target.value)}
-              placeholder="Search tenants..."
+              placeholder="Search by table number..."
               className="w-full pl-10 pr-4 py-2.5 text-sm rounded-xl border bg-white dark:bg-neutral-800 border-neutral-200 dark:border-neutral-700 text-neutral-900 dark:text-neutral-100 placeholder:text-neutral-400 dark:placeholder:text-neutral-500 focus:outline-none focus:ring-2 focus:ring-primary-300 dark:focus:ring-primary-500/40 focus:border-primary-400 dark:focus:border-primary-500 transition-all duration-200"
             />
           </div>
 
-          {/* Filter */}
           <DropdownMenu>
             <DropdownMenuTrigger asChild>
               <button
@@ -359,33 +294,36 @@ const Tenants = () => {
           <span className="font-semibold text-neutral-900 dark:text-neutral-100">
             {filtered.length}
           </span>{" "}
-          tenant{filtered.length !== 1 ? "s" : ""} found
+          table{filtered.length !== 1 ? "s" : ""} found
         </motion.p>
 
         {/* ── Grid ────────────────────────────────────────────────────────── */}
         {isLoading ? (
-          <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
-            {Array.from({ length: 4 }).map((_, i) => (
-              <TenantCardSkeleton key={i} />
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3">
+            {Array.from({ length: 6 }).map((_, i) => (
+              <TableCardSkeleton key={i} />
             ))}
           </div>
         ) : filtered.length > 0 ? (
           <AnimatePresence mode="popLayout">
-            <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
-              {filtered.map((tenant, i) => (
-                <EditableTenantCard
-                  key={tenant.tenantId}
-                  tenant={tenant}
-                  index={i}
-                  onEdit={setEditTarget}
-                  onDelete={setDeleteTarget}
-                  onToggleActive={handleToggleActive}
-                />
-              ))}
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3">
+              {filtered
+                .sort((a, b) => a.number - b.number)
+                .map((table, i) => (
+                  <TableCard
+                    key={table.tableId}
+                    table={table}
+                    index={i}
+                    onEdit={setEditTarget}
+                    onDelete={setDeleteTarget}
+                    onToggleActive={handleToggleActive}
+                    onShowQR={setQrTarget}
+                  />
+                ))}
             </div>
           </AnimatePresence>
         ) : (
-          /* ── Empty State ──────────────────────────────────────────────── */
+          /* ── Empty State ─────────────────────────────────────────────── */
           <motion.div
             className="flex flex-col items-center justify-center py-20"
             initial={{ opacity: 0, y: 12 }}
@@ -398,7 +336,7 @@ const Tenants = () => {
                   className="text-neutral-300 dark:text-neutral-600"
                 />
               ) : (
-                <Building2
+                <LayoutGrid
                   size={28}
                   className="text-neutral-300 dark:text-neutral-600"
                 />
@@ -406,68 +344,55 @@ const Tenants = () => {
             </div>
             <p className="font-semibold text-neutral-700 dark:text-neutral-300 mb-1">
               {search || filterStatus !== "all"
-                ? "No tenants match your search"
-                : "No tenants yet"}
+                ? "No tables match your search"
+                : "No tables yet"}
             </p>
             <p className="text-sm text-neutral-400 dark:text-neutral-500 mb-5">
               {search || filterStatus !== "all"
                 ? "Try different keywords or filters"
-                : "Add your first store location to get started"}
+                : "Add your first table to generate QR codes"}
             </p>
-            {!search &&
-              filterStatus === "all" &&
-              user.subscription.plan !== "FREE" &&
-              tenantsData.length < subscriptionConfig.maxTenant && (
-                <button
-                  onClick={() => setCreateOpen(true)}
-                  className="flex items-center gap-2 px-4 py-2.5 text-sm font-semibold bg-gradient-warm text-white rounded-xl shadow-order hover:shadow-lg hover:-translate-y-0.5 transition-all duration-200"
-                >
-                  <Plus size={16} />
-                  Add Tenant
-                </button>
-              )}
+            {!search && filterStatus === "all" && (
+              <button
+                onClick={() => setCreateOpen(true)}
+                className="flex items-center gap-2 px-4 py-2.5 text-sm font-semibold bg-gradient-warm text-white rounded-xl shadow-order hover:shadow-lg hover:-translate-y-0.5 transition-all duration-200"
+              >
+                <Plus size={16} />
+                Add Table
+              </button>
+            )}
           </motion.div>
         )}
       </div>
 
       {/* ── Modals ──────────────────────────────────────────────────────────── */}
-      <TenantModal
+      <TableModal
         isOpen={createOpen}
         mode="create"
         onClose={() => setCreateOpen(false)}
         onSubmit={handleCreate}
       />
-      <TenantModal
+      <TableModal
         isOpen={!!editTarget}
         mode="edit"
-        defaultValues={
-          editTarget
-            ? {
-                tenantName: editTarget.tenantName,
-                tenantLocation: editTarget.tenantLocation,
-                workHours: (editTarget.tenantWorkHours ?? []).map(
-                  (wh: TenantWorkHour) => ({
-                    tenantWorkHourId: wh.tenantWorkHourId,
-                    dayOfMonth: wh.dayOfMonth,
-                    openHour: wh.openHour?.slice(0, 5) ?? "08:00",
-                    closeHour: wh.closeHour?.slice(0, 5) ?? "22:00",
-                    isActive: wh.isActive ?? false,
-                  })
-                ),
-              }
-            : undefined
-        }
+        defaultValues={editTarget ? { number: editTarget.number } : undefined}
         onClose={() => setEditTarget(null)}
         onSubmit={handleEdit}
       />
-      <DeleteTenantModal
+      <DeleteTableModal
         isOpen={!!deleteTarget}
-        tenantName={deleteTarget?.tenantName ?? ""}
+        tableNumber={deleteTarget?.number ?? null}
         onClose={() => setDeleteTarget(null)}
         onConfirm={handleDelete}
+      />
+      <QRModal
+        isOpen={!!qrTarget}
+        table={qrTarget}
+        baseOrderUrl={BASE_ORDER_URL}
+        onClose={() => setQrTarget(null)}
       />
     </Layout>
   );
 };
 
-export default Tenants;
+export default Tables;

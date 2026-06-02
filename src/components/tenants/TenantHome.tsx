@@ -49,14 +49,15 @@ const TenantHome = () => {
 
     try {
       const result = await getUserTenantRole(selectedId);
+      const newRole = result.data; // ← pakai langsung dari response
 
       dispatch(
         setValues({
           activeTenantId: selectedId,
           activeTenantName: tenants.find(
             (tenant) => tenant.tenantId === selectedId
-          ).tenantName,
-          activeRole: result.data,
+          )?.tenantName,
+          activeRole: newRole,
         })
       );
 
@@ -64,14 +65,25 @@ const TenantHome = () => {
         orgId: activeOrganizationId,
         tenantId: selectedId,
       };
-      navigate(
-        resolvePath(
-          menus[activeRole]["tenant"].find(
-            (menu: { key: string }) => menu.key === "dashboard"
-          ).path,
-          params
-        )
+
+      // ✅ pakai newRole, bukan activeRole dari redux (masih stale)
+      const tenantMenus = menus[newRole]?.["tenant"];
+
+      if (!tenantMenus) {
+        toast.error(`No menus found for role: ${newRole}`);
+        return;
+      }
+
+      const dashboardMenu = tenantMenus.find(
+        (menu: { key: string }) => menu.key === "dashboard"
       );
+
+      if (!dashboardMenu) {
+        toast.error("Dashboard menu not found");
+        return;
+      }
+
+      navigate(resolvePath(dashboardMenu.path, params));
     } catch (error) {
       if (error instanceof Error) {
         toast.error(error.message);

@@ -34,12 +34,12 @@ const ROLE_STYLES: Record<OrganizationRole, string> = {
   OWNER:
     "bg-primary-50 dark:bg-primary-950/40 text-primary-700 dark:text-primary-400 border border-primary-200 dark:border-primary-800",
   ADMIN:
-    "bg-info-light dark:bg-info-dark/20 text-info-dark dark:text-info border border-blue-200 dark:border-blue-800"
+    "bg-info-light dark:bg-info-dark/20 text-info-dark dark:text-info border border-blue-200 dark:border-blue-800",
 };
 
 const ROLE_ICONS: Record<OrganizationRole, React.ReactNode> = {
   OWNER: <Crown className="w-3 h-3" />,
-  ADMIN: <Shield className="w-3 h-3" />
+  ADMIN: <Shield className="w-3 h-3" />,
 };
 
 // ─── Role Dropdown ────────────────────────────────────────────────────────────

@@ -26,6 +26,7 @@ import { createPortal } from "react-dom";
 import { useNavigate } from "react-router-dom";
 import toast from "react-hot-toast";
 import {
+  editTenantUserRole,
   getAllTenantUsersRole,
   inviteTenantMember,
   removeTenantUser,
@@ -48,32 +49,6 @@ const ROLE_ICONS: Record<TenantRole, React.ReactNode> = {
 
 // ─── Role Dropdown ────────────────────────────────────────────────────────────
 
-const ROLES: {
-  value: TenantRole;
-  label: string;
-  description: string;
-  icon: React.ReactNode;
-}[] = [
-  {
-    value: "STORE_MANAGER",
-    label: "Store Manager",
-    description: "Manage members, tables, and special menus",
-    icon: <UserCog className="w-3.5 h-3.5" />,
-  },
-  {
-    value: "CASHIER",
-    label: "Cashier",
-    description: "Manage orders and reservations",
-    icon: <BanknoteArrowDown className="w-3.5 h-3.5" />,
-  },
-  {
-    value: "COOK",
-    label: "Cook",
-    description: "See ongoing orders",
-    icon: <ChefHat className="w-3.5 h-3.5" />,
-  },
-];
-
 const RoleDropdown = ({
   currentRole,
   onSelect,
@@ -88,6 +63,37 @@ const RoleDropdown = ({
   const menuWidth = 224; // w-56 = 224px
   const left = anchorRect.left;
   const top = anchorRect.bottom + 6;
+  const { activeRole } = useAppSelector((state) => state.role);
+
+  const ROLES: {
+    value: TenantRole;
+    label: string;
+    description: string;
+    icon: React.ReactNode;
+  }[] = [
+    ...(activeRole === "OWNER" || activeRole === "ADMIN"
+      ? [
+          {
+            value: "STORE_MANAGER" as TenantRole,
+            label: "Store Manager",
+            description: "Manage members, tables, and special menus",
+            icon: <UserCog className="w-3.5 h-3.5" />,
+          },
+        ]
+      : []),
+    {
+      value: "CASHIER",
+      label: "Cashier",
+      description: "Manage orders and reservations",
+      icon: <BanknoteArrowDown className="w-3.5 h-3.5" />,
+    },
+    {
+      value: "COOK",
+      label: "Cook",
+      description: "See ongoing orders",
+      icon: <ChefHat className="w-3.5 h-3.5" />,
+    },
+  ];
 
   return createPortal(
     <>
@@ -166,7 +172,37 @@ const InviteModal = ({
   const [emailError, setEmailError] = useState("");
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [roleAnchorRect, setRoleAnchorRect] = useState<DOMRect | null>(null);
-  const { activeTenantId } = useAppSelector((state) => state.role);
+  const { activeRole, activeTenantId } = useAppSelector((state) => state.role);
+
+  const ROLES: {
+    value: TenantRole;
+    label: string;
+    description: string;
+    icon: React.ReactNode;
+  }[] = [
+    ...(activeRole === "OWNER" || activeRole === "ADMIN"
+      ? [
+          {
+            value: "STORE_MANAGER" as TenantRole,
+            label: "Store Manager",
+            description: "Manage members, tables, and special menus",
+            icon: <UserCog className="w-3.5 h-3.5" />,
+          },
+        ]
+      : []),
+    {
+      value: "CASHIER",
+      label: "Cashier",
+      description: "Manage orders and reservations",
+      icon: <BanknoteArrowDown className="w-3.5 h-3.5" />,
+    },
+    {
+      value: "COOK",
+      label: "Cook",
+      description: "See ongoing orders",
+      icon: <ChefHat className="w-3.5 h-3.5" />,
+    },
+  ];
 
   const validateEmail = (val: string) => /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(val);
 
@@ -404,13 +440,20 @@ const RemoveModal = ({
   onConfirm: () => void;
 }) => {
   const [isRemoving, setIsRemoving] = useState(false);
-  const { activeTenantId } = useAppSelector((state) => state.role);
+  const { activeOrganizationId, activeTenantId } = useAppSelector(
+    (state) => state.role
+  );
   const queryClient = useQueryClient();
 
   const handleConfirm = async () => {
     setIsRemoving(true);
     try {
-      await removeTenantUser(activeTenantId, user.userId, user.role);
+      await removeTenantUser(
+        activeOrganizationId,
+        activeTenantId,
+        user.userId,
+        user.role
+      );
       onConfirm();
 
       queryClient.invalidateQueries({ queryKey: ["tenantUsersRole"] });
@@ -527,6 +570,7 @@ const RowActionMenu = ({
     (state) => state.role
   );
   const { user: currentUser } = useAuth();
+  const { activeRole } = useAppSelector((state) => state.role);
 
   return createPortal(
     <motion.div
@@ -541,7 +585,7 @@ const RowActionMenu = ({
         {currentUser.organizationRoles.some(
           (role) =>
             (role.organizationId === activeOrganizationId &&
-              role.role === "OWNER") ||
+              (role.role === "OWNER" || role.role === "ADMIN")) ||
             currentUser.tenantRoles.some(
               (role) =>
                 role.tenantId === activeTenantId &&
@@ -559,7 +603,9 @@ const RowActionMenu = ({
             Edit Role
           </button>
         )}
-        {user.role !== "STORE_MANAGER" && (
+        {(user.role !== "STORE_MANAGER" ||
+          (user.role === "STORE_MANAGER" &&
+            (activeRole === "OWNER" || activeRole === "ADMIN"))) && (
           <>
             <div className="h-px bg-neutral-100 dark:bg-neutral-800 mx-1" />
             <button
@@ -583,12 +629,42 @@ const RowActionMenu = ({
 // ─── Main Page ────────────────────────────────────────────────────────────────
 
 const TenantUsers = () => {
-  const { activeOrganizationId, activeTenantId } = useAppSelector(
+  const { activeOrganizationId, activeTenantId, activeRole } = useAppSelector(
     (state) => state.role
   );
   const [currentPage, setCurrentPage] = useState<PageKey>("users");
   const queryClient = useQueryClient();
   const navigate = useNavigate();
+
+  const ROLES: {
+    value: TenantRole;
+    label: string;
+    description: string;
+    icon: React.ReactNode;
+  }[] = [
+    ...(activeRole === "OWNER" || activeRole === "ADMIN"
+      ? [
+          {
+            value: "STORE_MANAGER" as TenantRole,
+            label: "Store Manager",
+            description: "Manage members, tables, and special menus",
+            icon: <UserCog className="w-3.5 h-3.5" />,
+          },
+        ]
+      : []),
+    {
+      value: "CASHIER",
+      label: "Cashier",
+      description: "Manage orders and reservations",
+      icon: <BanknoteArrowDown className="w-3.5 h-3.5" />,
+    },
+    {
+      value: "COOK",
+      label: "Cook",
+      description: "See ongoing orders",
+      icon: <ChefHat className="w-3.5 h-3.5" />,
+    },
+  ];
 
   const { data: tenantUsersRoleData } = useQuery({
     queryKey: ["tenantUsersRole"],
@@ -617,16 +693,32 @@ const TenantUsers = () => {
       u.email.toLowerCase().includes(search.toLowerCase())
   );
 
-  const handleRoleChange = (
+  const handleRoleChange = async (
     userId: string,
     tenantId: string,
-    role: string,
+    oldRole: TenantRole,
     newRole: TenantRole
   ) => {
     setEditRoleTarget(null);
+
+    try {
+      await editTenantUserRole(
+        activeOrganizationId,
+        tenantId,
+        userId,
+        oldRole,
+        newRole
+      );
+
+      toast.success("Role Updated");
+
+      queryClient.invalidateQueries({ queryKey: ["tenantUsersRole"] });
+    } catch (err) {
+      toast.error(err);
+    }
   };
 
-  const handleRemove = (userId: string) => {
+  const handleRemove = () => {
     setRemoveTarget(null);
   };
 
@@ -777,7 +869,10 @@ const TenantUsers = () => {
                         {/* Actions */}
                         <td className="px-5 py-3.5">
                           <div className="relative flex justify-end">
-                            {user.role !== "STORE_MANAGER" && (
+                            {(user.role !== "STORE_MANAGER" ||
+                              (user.role === "STORE_MANAGER" &&
+                                (activeRole === "OWNER" ||
+                                  activeRole === "ADMIN"))) && (
                               <button
                                 onClick={(e) => {
                                   const rect =
@@ -959,7 +1054,7 @@ const TenantUsers = () => {
           <RemoveModal
             user={removeTarget}
             onClose={() => setRemoveTarget(null)}
-            onConfirm={() => handleRemove(removeTarget.userId)}
+            onConfirm={() => handleRemove()}
           />
         )}
       </AnimatePresence>

@@ -1,9 +1,8 @@
-import { Subscription, SubscriptionConfig } from "./subscription";
+import { Subscription } from "./subscription";
 
 export interface AuthContextType {
   user: User | null;
   token: string;
-  subscriptionConfig: SubscriptionConfig;
   isAuthenticated: boolean;
   isLoadingAuth: boolean;
 
